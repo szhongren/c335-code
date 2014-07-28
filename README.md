@@ -1,4 +1,4 @@
-Fall-2014
-=========
+Spring-2014
+===========
 
-Course respository for the Fall 2014 SoIC Computer Structures course. 
+Course Repository for SoIC C335 Computer Structures 
