@@ -1,53 +1,44 @@
-/* led.c --- 
- * 
- * Filename: led.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 10:53:06 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Code: */
 #include <stm32f30x.h>
+#include <stm32f30x_gpio.h>
+#include <stm32f30x_rcc.h>
 #include <f3d_led.h>
 
+
+//intializes the port and pins for the 8 leds on the board
 void f3d_led_init(void) {
-  // initialize the port and pins for the 8 leds
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOE, ENABLE);
+
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; 
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
 }
 
+/*Turns on the appropriate led as specified by the parameter.*/
 void f3d_led_on(int led) {
-  // enable the led specified by led parameter
-  // led = 0-7 representing the 8 leds
+  /*YOUR CODE HERE*/
 }
- 
+
+/*Turns off the approiate led as specified by the parameter*/ 
 void f3d_led_off(int led) {
-  // disable the led specified by led parameter
-  // led = 0-7 representing the 8 leds
+  /*YOUR CODE HERE*/
 } 
+
+/*Turns on all LEDs*/
 
 void f3d_led_all_on(void) {
-  // turn on all 8 leds 
+  /*YOUR CODE HERE*/
+ 
 } 
 
+/*Turns off all LEDs*/
 void f3d_led_all_off(void) {
-  // turn off all 8 leds
+  /*YOUR CODE HERE*/
 } 
 
 /* led.c ends here */

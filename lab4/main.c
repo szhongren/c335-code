@@ -1,32 +1,6 @@
-/* main.c --- 
- * 
- * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-/* Code: */
-
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
 #include <f3d_led.h>     // Pull in include file for the local drivers
+#include <f3d_usr_btn.h>
 
 // Simple looping delay function
 void delay(void) {
@@ -36,8 +10,14 @@ void delay(void) {
   }
 }
 
-int main(void) { 
-  while (1);
+int main(void) {
+  f3d_led_init();
+  f3d_usr_btn_init();
+  /*MODIFY CODE HERE!!!!*/
+  while (1){
+    if(button_read()) GPIOE->BRR = GPIO_Pin_9;
+    GPIOE->BSRR = GPIO_Pin_9;
+  }
 }
 
 #ifdef USE_FULL_ASSERT
