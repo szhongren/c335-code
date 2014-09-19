@@ -1,8 +1,20 @@
+/* Names: Erin Leonhard (eeleonha) Zhongren Shao (shaoz)
+ * 
+ * Filename: f3d_led.c
+ * Part of: Lab4
+ * Date Created: 9/19/14
+ * Last Modified: 9/19/14
+ *
+ *
+ */
+
+
 #include <stm32f30x.h>
 #include <stm32f30x_gpio.h>
 #include <stm32f30x_rcc.h>
 #include <f3d_led.h>
 
+// array for all GPIO_Pins so that int led can be used as index
 int pins[16] = {GPIO_Pin_0,
 		GPIO_Pin_1,
 		GPIO_Pin_2,
@@ -66,7 +78,6 @@ void f3d_led_off(int led) {
 } 
 
 /*Turns on all LEDs*/
-
 void f3d_led_all_on(void) {
   int i = 8;
   for (i = 8; i < 16; i++) {
