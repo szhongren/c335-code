@@ -15,8 +15,10 @@ int main(void) {
   f3d_usr_btn_init();
   /*MODIFY CODE HERE!!!!*/
   while (1){
-    if(button_read()) GPIOE->BRR = GPIO_Pin_9;
-    GPIOE->BSRR = GPIO_Pin_9;
+    if(button_read()) 
+      GPIOE->BRR = GPIO_Pin_9;
+    else
+      GPIOE->BSRR = GPIO_Pin_9;
   }
 }
 
