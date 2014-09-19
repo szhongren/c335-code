@@ -11,15 +11,26 @@ void delay(void) {
 }
 
 int main(void) {
+  // calls function from f3d_led.c
   f3d_led_init();
+  // function from f3d_usr_btn.c
   f3d_usr_btn_init();
   /*MODIFY CODE HERE!!!!*/
-  while (1){
-    if(button_read()) 
-      GPIOE->BRR = GPIO_Pin_9;
-    else
-      GPIOE->BSRR = GPIO_Pin_9;
-  }
+  //while (1){
+    f3d_led_all_off();
+    int i = 8;
+    for (i = 8; i < 16; i++) {
+      f3d_led_on(i);
+      delay();
+      if (button_read()) {
+	while(button_read()){
+	  delay();
+	}
+      }
+      f3d_led_off(i);
+    }
+    f3d_led_all_on();
+    //}
 }
 
 #ifdef USE_FULL_ASSERT
