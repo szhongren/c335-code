@@ -1,12 +1,16 @@
-
-  /*
- * newlib_stubs.c
- *
- *  Created on: 2 Nov 2010
- *      Author: nanoage.co.uk
+/* newlib_stubs.c --- 
+ * 
+ * Filename: newlib_stubs.c
+ * Part of: Lab5
+ * Description: makes printf useable  for printing from STM32
+ * Author: Zhongren Shao (shaoz), Erin Leonhard (eeleonha) 
+ * Created: 9/26/2014
+ * Last-Updated: 9/26/2014
+ *           By: Authors
+ * 
  */
 
-/* 
+/*
 The original version of this code is posted at https://sites.google.com/site/stm32discovery/open-source-development-with-the-stm32-discovery/getting-newlib-to-work-with-stm32-and-code-sourcery-lite-eabi. This version was adapted to be used with the IUCS P442 lab. 
 
 Bryce Himebaugh
@@ -171,6 +175,7 @@ int _read(int file, char *ptr, int len) {
     switch (file) {
     case STDIN_FILENO:
         for (n = 0; n < len; n++) {
+	  c = (char) getchar();
 	  //
 	  // C/H335, A593
 	  // Insert your getchar function here
@@ -235,6 +240,7 @@ int _write(int file, char *ptr, int len) {
     switch (file) {
     case STDOUT_FILENO: /*stdout*/
         for (n = 0; n < len; n++) {
+	  putchar(*ptr++);
 	 //
 	 // C/H335, A593
 	 // Insert your putchar function here
@@ -244,6 +250,7 @@ int _write(int file, char *ptr, int len) {
         break;
     case STDERR_FILENO: /* stderr */
         for (n = 0; n < len; n++) {
+	  putchar(*ptr++);
 	 //
 	 // C/H335, A593
 	 // Insert your putchar function here
