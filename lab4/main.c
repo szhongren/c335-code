@@ -32,11 +32,11 @@ int main(void) {
   for (i = 8; i < 16; i++) {
     f3d_led_on(i);
     delay();
-    if (button_read()) {
+    //if (button_read()) {
       while(button_read()){
 	delay();
       }
-    }
+      //}
     f3d_led_off(i);
   }
   f3d_led_all_on();

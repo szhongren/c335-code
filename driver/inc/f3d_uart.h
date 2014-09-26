@@ -35,8 +35,10 @@
 /* Code: */
 
 void f3d_uart_init(void);
-int putchar(int);
-int getchar(void);
+// weird bug with redeclared getchar
+//int putchar(int);
+//int getchar(void);
+// DO NOT UNCOMMENT
 void putstring(char *);
 
 /* f3d_uart.h ends here */

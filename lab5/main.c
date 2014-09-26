@@ -1,29 +1,15 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
+ * Part of: Lab5
+ * Description: runs word count program on STM32 with serialT
+ * Author: Zhongren Shao (shaoz), Erin Leonhard (eeleonha) 
+ * Created: 9/26/2014
+ * Last-Updated: 9/26/2014
+ *           By: Authors
  * 
  */
 
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-/* Code: */
 #include <stdio.h>
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
 #include <f3d_uart.h>     // Pull in include file for the local drivers
