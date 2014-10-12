@@ -71,7 +71,7 @@ int putchar(int c) {
 // getschar from serialT to UART
 int getchar(void) {
   // ditto as putchar
-  while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == (uint16_t)RESET);
+  if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) != (uint16_t)RESET);
 
   // recv data from UART
   char c = USART_ReceiveData(USART1);
