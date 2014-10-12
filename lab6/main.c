@@ -24,58 +24,111 @@
  * 
  */
 /* Code: */
-
-#include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
-#include <f3d_led.h>     // Pull in include file for the local drivers
-#include <f3d_uart.h>     // Pull in include file for the local drivers
+//main.c for lab6
+#include <f3d_uart.h>
 #include <stdio.h>
+#include <f3d_gyro.h>
+#include <f3d_led.h>
+#include <f3d_usr_btn.h>
 
-// Simple looping delay function
 void delay(void) {
-  int i = 20000;
+  int i = 2000000;
   while (i-- > 0) {
     asm("nop"); /* This stops it optimising code out */
   }
 }
 
+void LED_control(float deg) {
+  int isPos = 1;
+  int posLED[5] = {9, 8, 15, 14, 13};
+  int negLED[5] = {9, 10, 11, 12, 13};
+
+  if (deg < 0) {
+    deg = -deg;
+    isPos = 0;
+  } 
+  
+  int n;
+  if (deg <= 5)
+    n = 0;
+  if (deg > 5)
+    n = 1;
+  if (deg > 100)
+    n = 2;
+  if (deg > 200)
+    n = 3;
+  if (deg > 300)
+    n = 4;
+  if (deg > 400)
+    n = 5;
+  
+  int *LED;
+  if (isPos) {
+    LED = posLED;
+  } else {
+    LED = negLED;
+  }
+  
+  int i = 0;
+  for (i = 0; i < n; i++) {
+    f3d_led_on(LED[i]);
+  }
+}
+
 int main(void) { 
-  int led_state = 0;
-  GPIO_InitTypeDef GPIO_InitStructure;
-
-
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
-  
-  f3d_uart_init();
   f3d_led_init();
-  printf("Lab6 Init\n");
+  f3d_usr_btn_init();
+  f3d_uart_init();
+  f3d_gyro_init();
+  
+  float fArr[3];
+  int identifier = 0;
+  char axis = 'x';
+  
+  while(1) {
+    f3d_gyro_getdata(fArr);
 
-  // Part 2.2 Assertions 
-  // This broken code contains an issue that will generate an assertion. 
-  // Uncomment and debug the code. 
-  /* 
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
-  */ 
-  while (1) {
-    // flash north (red) led
-    if (led_state^=2) {
-      f3d_led_on(1);
+    if (button_read()) {
+      switch (axis) {
+      case 'x':
+	axis = 'y';
+	break;
+      case 'y':
+	axis = 'z';
+	break;
+      case 'z':
+	axis = 'x';
+	break;
+      }
+    } else if (getchar()) {
+      axis = getchar();
+      setvbuf(stdin, NULL, _IONBF, 0);
+      setvbuf(stdout, NULL, _IONBF, 0);
+      setvbuf(stderr, NULL, _IONBF, 0);
+      f3d_uart_init();
     }
-    else {
-      f3d_led_off(1);
+    
+    
+    switch(axis) {
+    case 'x':
+      identifier = 0;
+      break;
+    case 'y':
+      identifier = 1;
+      break;
+    case 'z':
+      identifier = 2;
+      break;
     }
-    // provide a delay for the flashing 
-    // Part 3.1.1 Printf Debugging
-    /* 
-    printf("led_state=%d\n",led_state);
-    */
+    LED_control(fArr[identifier]);
+    
+    printf("%c|%f\n", axis, fArr[identifier]);
+    printf("--------------------------------------------------------------------------------\n");
     delay();
+    f3d_led_all_off();
   }
 }
 
