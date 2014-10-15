@@ -61,6 +61,7 @@ int gitBitsInt(int yikes, char answer[]){
     yikes=yikes>>1;
     i--;
   }
+  // fill in end char for string
   answer[32]=0;
   return 0;
 }
