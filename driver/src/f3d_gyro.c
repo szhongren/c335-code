@@ -1,3 +1,15 @@
+/*
+ * f3d_gyro.c
+ *
+ * Last Edited By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
+ * Last Edited Date: 10/3/14
+ *
+ * Part of: C335 Lab 6
+ * Task: Develop an application for the gyroscope that allows a user to select a measurement
+ * axis and then will output the current axis on the console along with the measured data
+ * while displaying the magnitude of each velocity on the LED displays.
+ */
+
 #include <f3d_gyro.h>
 #include <stm32f30x.h>
 void f3d_gyro_interface_init() {
@@ -83,7 +95,7 @@ void f3d_gyro_interface_init() {
   SPI_Cmd(SPI1, ENABLE);
 }
 
-//the init function to be called (THIS SHOULD BE IN YOUR MAIN
+//the init function to be called (THIS SHOULD BE IN YOUR MAIN)
 
 void f3d_gyro_init(void) {
   //
@@ -177,9 +189,6 @@ static uint8_t f3d_gyro_sendbyte(uint8_t byte) {
   // for every byte sent, the receiver needs to confirm that it was received
   while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
   return (uint8_t) SPI_ReceiveData8(SPI1);
-
-  /*^^^^^^^^^^^^^^^^^^^^ CODE HERE! ^^^^^^^^^^^^^^^^^^^^^^^*/
-  /*********************************************************/
 }
 
 /*gets the data*/
@@ -198,7 +207,7 @@ void f3d_gyro_getdata(float *pfData) {
   for(i=0; i<3; i++) {
     RawData[i]=(int16_t)(((uint16_t)tmpbuffer[2*i+1] << 8) + tmpbuffer[2*i]);
   }
-  //adjusting the data with the sensitivity
+  // adjusting the data with the sensitivity
   // this is just what happens, such is life
   for(i=0; i<3; i++) {
     pfData[i]=(float)RawData[i]/L3G_Sensitivity_500dps;

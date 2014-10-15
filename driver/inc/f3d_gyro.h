@@ -1,4 +1,16 @@
-/* f3d_gyro.h */
+/* 
+ * f3d_gyro.h 
+ *
+ * Last Edited By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
+ * Last Edited Date: 10/3/14
+ *
+ * Part of: C335 Lab 6
+ * Task: Develop an application for the gyroscope that allows a user to select a measurement 
+ * axis and then will output the current axis on the console along with the measured data
+ * while displaying the magnitude of each velocity on the LED displays.
+ */
+
+
 
 /* Code: */
 #include <stm32f30x.h>
