@@ -49,24 +49,57 @@ void f3d_lcd_sd_interface_init(void) {
      MISO     PB14     AF - assigned to SPI2 
      MOSI     PB15     AF - assigned to SPI2 
    */
-
+  
   GPIO_InitTypeDef GPIO_InitStructure;
-  SPI_InitTypeDef  SPI_InitStructure;
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 , ENABLE);
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
+  //configuration of MISO, MOSI, SCK
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+  /********* CONFIGURE MODE HERE (4.2.1) ***********************/
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  /********** Alternate functions (4.2.2) *******/
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_5);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_5);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_5);
 
-  // Section 3.2 Alternate Function Pin Assignment SCK, MISO, MOSI 
-  // Provide
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   
-  // Section 3.2 Pin configuration for SCK, MISO, MOSI
-  // Provide 
-
-  // Section 3.2 Pin Configuration for CS, RESET, RS, BKL
-  // Provide  
+  /********* Call GPIO_Init function here (4.2.3) **************/
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+  // Section 4.2 Pin Configuration for CS, RESET, RS, BKL
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | 
+    GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
+  /********* CONFIGURE MODE HERE (4.2.1) ***********************/
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
+  /**********Call the GPIO_Init function (4.2.3)  *************/ 
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
   // Section 4.1 SPI2 configuration
-  // Provide 
+  SPI_InitTypeDef SPI_InitStructure;
+  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+  SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+  SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
+  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+  SPI_InitStructure.SPI_CRCPolynomial = 7;
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+  SPI_Init(/*something goes here*/SPI2, &SPI_InitStructure);
+  SPI_RxFIFOThresholdConfig(/*somthing goes here*/SPI2, SPI_RxFIFOThreshold_QF);
+  SPI_Cmd(/*something goes here*/SPI2, ENABLE);
 } 
 
 
