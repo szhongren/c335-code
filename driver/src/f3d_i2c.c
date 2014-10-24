@@ -45,7 +45,18 @@ void f3d_i2c1_init() {
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);  // Port B - SDA (7) and SCL (6)
 
   // I2C GPIO Initialization and Alternate Function Selection 
-
+  /******************vvvvvvvvvvvvvYOUR CODE GOES HEREvvvvvvvvvvvvvv***********************/
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_4);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_4);
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /******************^^^^^^^^^^^^^YOUR CODE GOES HERE^^^^^^^^^^^^^^**********************/
+  
   I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
   I2C_InitStructure.I2C_AnalogFilter = I2C_AnalogFilter_Enable;
   I2C_InitStructure.I2C_DigitalFilter = 0x00;

@@ -12,6 +12,7 @@
 #include <f3d_lcd_sd.h>
 #include <f3d_delay.h>
 #include <glcdfont.h>
+#include <math.h>
 
 static uint8_t madctlcurrent = MADVAL(MADCTLGRAPHICS);
 
@@ -306,4 +307,125 @@ void f3d_lcd_drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t 
   }
 }
 
+void f3d_lcd_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color)
+{
+   signed int  x, y, addx, addy, dx, dy;
+   signed long P;
+   int i;
+   dx = abs((signed int)(x2 - x1));
+   dy = abs((signed int)(y2 - y1));
+   x = x1;
+   y = y1;
+
+   if(x1 > x2)
+      addx = -1;
+   else
+      addx = 1;
+   if(y1 > y2)
+      addy = -1;
+   else
+      addy = 1;
+
+   if(dx >= dy)
+   {
+      P = 2*dy - dx;
+
+      for(i=0; i<=dx; ++i)
+      {
+         f3d_lcd_drawPixel(x, y, color);
+
+         if(P < 0)
+         {
+            P += 2*dy;
+            x += addx;
+         }
+         else
+         {
+            P += 2*dy - 2*dx;
+            x += addx;
+            y += addy;
+         }
+      }
+   }
+   else
+   {
+      P = 2*dx - dy;
+
+      for(i=0; i<=dy; ++i)
+      {
+         f3d_lcd_drawPixel(x, y, color);
+
+         if(P < 0)
+         {
+            P += 2*dx;
+            y += addy;
+         }
+         else
+         {
+            P += 2*dx - 2*dy;
+            x += addx;
+            y += addy;
+         }
+      }
+   }
+}
+
+void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, uint8_t fill) {
+   signed int a, b, P;
+   a = 0;
+   b = radius;
+   P = 1 - radius;
+
+   do
+   {
+      if(fill)
+      {
+         f3d_lcd_drawLine(x-a, y+b, x+a, y+b, color);
+         f3d_lcd_drawLine(x-a, y-b, x+a, y-b, color);
+         f3d_lcd_drawLine(x-b, y+a, x+b, y+a, color);
+         f3d_lcd_drawLine(x-b, y-a, x+b, y-a, color);
+      }
+      else
+      {
+	 f3d_lcd_drawPixel(a+x, b+y, color);
+         f3d_lcd_drawPixel(b+x, a+y, color);
+         f3d_lcd_drawPixel(x-a, b+y, color);
+         f3d_lcd_drawPixel(x-b, a+y, color);
+         f3d_lcd_drawPixel(b+x, y-a, color);
+         f3d_lcd_drawPixel(a+x, y-b, color);
+         f3d_lcd_drawPixel(x-a, y-b, color);
+         f3d_lcd_drawPixel(x-b, y-a, color);
+      }
+
+      if(P < 0)
+         P+= 3 + 2*a++;
+      else
+         P+= 5 + 2*(a++ - b--);
+    } while(a <= b);
+}
+
+void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, int magnitude) {
+  uint8_t x_index = x;
+  uint8_t y_index = y - radius;
+  if (magnitude >= 0) {
+    while (y_index <= y + radius) {
+      uint8_t diff = x + (unsigned int)floor(sqrt(pow((double)radius, 2) - pow((double)y-y_index, 2))) - x_index;
+      if (abs(diff) >= 1) {
+	int i = 0;
+	for (i = 0; i < abs(diff); i++) {
+	  f3d_lcd_drawPixel(diff < 0 ? x_index - i : x_index + i, y_index, color);
+	}
+      }
+      x_index += diff;
+      f3d_lcd_drawPixel(x_index, y_index, color);
+      y_index++;
+    }
+  } else {
+    while (y_index <= y + radius) {
+      x_index = x - (unsigned int)floor(sqrt(pow((double)radius, 2) - pow((double)y-y_index, 2)));
+      f3d_lcd_drawPixel(x_index, y_index, color);
+      y_index++;
+    }
+  }
+}
 /* f3d_lcd_sd.c ends here */
