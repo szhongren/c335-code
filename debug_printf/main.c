@@ -2,12 +2,10 @@
  * main.c
  *
  * Last Edited By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
- * Last Edited Date: 10/3/14
+ * Last Edited Date: 10/17/14
  *
- * Part of: C335 Lab 6 
- * Task: Develop an application for the gyroscope that allows a user to select a measurement
- * axis and then will output the current axis on the console along with the measured data
- * while displaying the magnitude of each velocity on the LED displays. 
+ * Part of: C335 debug_printf 
+ * Test printf for use in debugging, to learn about the overhead involved
  */
 
 //main.c for lab6
@@ -24,6 +22,7 @@ void delay(void) {
   }
 }
 
+// not used
 void LED_control(float deg) {
   // boolean: is positive velocity?
   int isPos = 1;
@@ -98,10 +97,12 @@ int main(void) {
     }
       
     if (mode) {
+      // faster
       f3d_led_on(9);
       delay();
       f3d_led_off(9);
     } else {
+      // slower
       f3d_led_on(9);
       printf("printing! in print mode");
       delay();

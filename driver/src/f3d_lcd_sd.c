@@ -1,35 +1,11 @@
-/* f3d_lcd_sd.c --- 
- * 
- * Filename: f3d_lcd_sd.c
- * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: 
- * Created: Thu Oct 24 05:18:36 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Copyright (c) 2004-2007 The Trustees of Indiana University and 
- * Indiana University Research and Technology Corporation.  
- * 
- * All rights reserved. 
- * 
- * Additional copyrights may follow 
+/*
+ * f3d_lcd_sd.c
+ *
+ * Last Edited By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
+ * Last Edited Date: 10/17/14
+ *
+ * Part of: C335 Lab 7
+ * Sets up the LCD and its interface for use in other programs 
  */
 
 /* Code: */
@@ -39,6 +15,8 @@
 
 static uint8_t madctlcurrent = MADVAL(MADCTLGRAPHICS);
 
+
+// Inits the Pins and SPI Links needed to use the LCD
 void f3d_lcd_sd_interface_init(void) {
   /* Pin Assignments 
      RS       PB9      OUT 
@@ -58,12 +36,14 @@ void f3d_lcd_sd_interface_init(void) {
   GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
   /********* CONFIGURE MODE HERE (4.2.1) ***********************/
+  // use AF Mode for Pins 13..15
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   /********** Alternate functions (4.2.2) *******/
+  // Select the alternate functions for Pins 13..15
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_5);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_5);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_5);
@@ -71,18 +51,21 @@ void f3d_lcd_sd_interface_init(void) {
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   
   /********* Call GPIO_Init function here (4.2.3) **************/
+  // Init the Pins we just configured
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   // Section 4.2 Pin Configuration for CS, RESET, RS, BKL
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | 
     GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
   /********* CONFIGURE MODE HERE (4.2.1) ***********************/
+  // Use OUT Mode for the above Pins, 9..12
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
-  /**********Call the GPIO_Init function (4.2.3)  *************/ 
+  /**********Call the GPIO_Init function (4.2.3)  *************/
+  // Init the Pins we just configured
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
@@ -161,6 +144,7 @@ static const struct lcd_cmdBuf initializers[] = {
   { 0, 0, 0, 0}
 };
 
+// Inits the LCD along with the interface
 void f3d_lcd_init(void) {
   const struct lcd_cmdBuf *cmd;
 
