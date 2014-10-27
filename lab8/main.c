@@ -34,6 +34,7 @@
 #include <f3d_lcd_sd.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 void display_raw_data(float accel_data[], float mag_data[]) {
   
@@ -68,7 +69,15 @@ void display_raw_data(float accel_data[], float mag_data[]) {
   delay(2000);
 }
 
-void 
+void accel_rawdata_to_radians(float accel_data[], float rads[]) {
+  rads[0] = atan(accel_data[0]/(sqrt(pow(accel_data[1], 2) + pow(accel_data[2], 2))));
+  delay(10);
+  rads[1] = atan(accel_data[1]/(sqrt(pow(accel_data[0], 2) + pow(accel_data[2], 2))));
+  delay(10);
+  rads[2] = atan(accel_data[2]/(sqrt(pow(accel_data[0], 2) + pow(accel_data[1], 2))));
+  delay(10);
+  printf("In converter: %f, %f, %f\n", rads[0], rads[1], rads[2]);
+}
 
 int main(void) {
   setvbuf(stdin, NULL, _IONBF, 0);
@@ -86,16 +95,38 @@ int main(void) {
   delay(10);
   float accel_data[3];
   float mag_data[3];
+  float accel_rads[3];
   f3d_lcd_fillScreen(BLACK);
-  
+
+  f3d_lcd_drawCircle(15, 64, 26, RED, 1);
+  f3d_lcd_drawCircle(15, 64, 79, GREEN, 1);
+  f3d_lcd_drawCircle(15, 64, 132, BLUE, 1);
+  f3d_lcd_drawChar(62, 23, 'X', WHITE, RED);
+  f3d_lcd_drawChar(62, 76, 'Y', WHITE, GREEN);
+  f3d_lcd_drawChar(62, 129, 'Z', WHITE, BLUE);
+
   while (1) {
     f3d_accel_read(accel_data);
-    f3d_mag_read(mag_data);
-    display_raw_data(accel_data, mag_data);
-    f3d_lcd_drawCircle(10, 64, 80, RED, 0);
-    float test = 1.234;
-    // f3d_lcd_drawSemicircle(21, 64, 80, CYAN, test);
-    // f3d_lcd_drawSemicircle(21, 64, 80, CYAN, -2.6);
+    
+    // f3d_mag_read(mag_data);
+    // display_raw_data(accel_data, mag_data);
+    accel_rawdata_to_radians(accel_data, accel_rads);
+    /* int i; */
+    /* for (i = 0; i < 5; i++) { */
+    /*   float temp = -0.1 - (i * 0.5); */
+    /*   f3d_lcd_drawSemicircle(21, 64, 26, RED, &temp); */
+    /*   delay(1000); */
+    /* } */
+    f3d_lcd_drawSemicircle(21, 64, 26, RED, &accel_rads[0]);
+    f3d_lcd_drawSemicircle(21, 64, 79, GREEN, &accel_rads[1]);
+    f3d_lcd_drawSemicircle(21, 64, 132, BLUE, &accel_rads[2]);
+    delay(100);
+    // printf("drawsemicircles\n");
+    f3d_lcd_drawSemicircle(21, 64, 26, BLACK, &accel_rads[0]);  
+    f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &accel_rads[1]); 
+    f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &accel_rads[2]);
+    // printf("clearCircles\n");
+
   }  
 
 }

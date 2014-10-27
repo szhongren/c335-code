@@ -63,6 +63,7 @@ void f3d_accel_read(float *accel_data) {
     raw_data[i]=((int16_t)((uint16_t)buffer[2*i+1] << 8) + buffer[2*i])/(uint8_t)16;
     accel_data[i]=(float)raw_data[i]/1000.0;
   }
+  delay(10);
 }
 
 /* f3d_accel.c ends here */

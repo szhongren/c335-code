@@ -272,7 +272,7 @@ void f3d_lcd_fillScreen(uint16_t color) {
   }
 }
 
-void f3d_lcd_drawPixel(uint8_t x, uint8_t y, uint16_t color) {
+inline void f3d_lcd_drawPixel(uint8_t x, uint8_t y, uint16_t color) {
   if ((x >= ST7735_width) || (y >= ST7735_height)) return;
   f3d_lcd_setAddrWindow(x,y,x+1,y+1,MADCTLGRAPHICS);
   f3d_lcd_pushColor(&color,1);
@@ -402,13 +402,15 @@ void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, ui
       else
          P+= 5 + 2*(a++ - b--);
     } while(a <= b);
-}
+   // delay(10);
+} 
 
-void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float magnitude) {
+void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude) {
   float radians = 0;
-  if (magnitude >= 0) {
-    for(radians = -M_PI/2; radians < -M_PI/2 + magnitude; radians += .01) {
-      printf("%f,%f\n", radians, magnitude);
+  float  newmag = 2 * *magnitude;
+  // printf("Magnitude: %c %f\n", y > 100 ? 'z' : y > 60 ? 'y' : 'x', *magnitude);
+  if (newmag >= 0) {
+    for(radians = -M_PI/2; radians < -M_PI/2 + newmag; radians += .03) {
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
       
@@ -416,7 +418,7 @@ void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color
       /* display code */
     }
   } else {
-    for(radians = -M_PI/2; radians > -M_PI/2 + magnitude; radians -= .01) {
+    for(radians = -M_PI/2; radians > -M_PI/2 + newmag; radians -= .03) {
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
       
@@ -424,5 +426,6 @@ void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color
 	/* display code */
       }
   }
+  // delay(10);
 }
 /* f3d_lcd_sd.c ends here */
