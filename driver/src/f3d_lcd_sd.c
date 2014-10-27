@@ -404,28 +404,24 @@ void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, ui
     } while(a <= b);
 }
 
-void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, int magnitude) {
-  uint8_t x_index = x;
-  uint8_t y_index = y - radius;
-  if (magnitude >= 0) {
-    while (y_index <= y + radius) {
-      uint8_t diff = x + (unsigned int)floor(sqrt(pow((double)radius, 2) - pow((double)y-y_index, 2))) - x_index;
-      if (abs(diff) >= 1) {
-	int i = 0;
-	for (i = 0; i < abs(diff); i++) {
-	  f3d_lcd_drawPixel(diff < 0 ? x_index - i : x_index + i, y_index, color);
-	}
-      }
-      x_index += diff;
-      f3d_lcd_drawPixel(x_index, y_index, color);
-      y_index++;
+void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, char color, float magnitude) {
+  float radians = 0;
+  if (magnitude>= 0) {
+    for(radians = -M_PI/2; radians < -M_PI/2 + magnitude; radians += .01) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      
+      f3d_lcd_drawPixel(newx, newy, color);
+      /* display code */
     }
   } else {
-    while (y_index <= y + radius) {
-      x_index = x - (unsigned int)floor(sqrt(pow((double)radius, 2) - pow((double)y-y_index, 2)));
-      f3d_lcd_drawPixel(x_index, y_index, color);
-      y_index++;
-    }
+    for(radians = -M_PI/2; radians > -M_PI/2 + magnitude; radians -= .01) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      
+      f3d_lcd_drawPixel(newx, newy, color);
+	/* display code */
+      }
   }
 }
 /* f3d_lcd_sd.c ends here */
