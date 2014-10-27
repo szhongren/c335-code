@@ -76,13 +76,23 @@ void accel_rawdata_to_radians(float accel_data[], float rads[]) {
   delay(10);
   rads[2] = atan(accel_data[2]/(sqrt(pow(accel_data[0], 2) + pow(accel_data[1], 2))));
   delay(10);
-  printf("In converter: %f, %f, %f\n", rads[0], rads[1], rads[2]);
+}
+
+void accel_visualization() { 
+  f3d_lcd_drawCircle(15, 64, 26, RED, 1);
+  f3d_lcd_drawCircle(15, 64, 79, GREEN, 1);
+  f3d_lcd_drawCircle(15, 64, 132, BLUE, 1);
+  f3d_lcd_drawChar(62, 23, 'X', WHITE, RED);
+  f3d_lcd_drawChar(62, 76, 'Y', WHITE, GREEN);
+  f3d_lcd_drawChar(62, 129, 'Z', WHITE, BLUE);
 }
 
 int main(void) {
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
+  f3d_usr_btn_init();
+  delay(10);
   f3d_i2c1_init();
   delay(10);
   f3d_accel_init();
@@ -97,36 +107,37 @@ int main(void) {
   float mag_data[3];
   float accel_rads[3];
   f3d_lcd_fillScreen(BLACK);
-
-  f3d_lcd_drawCircle(15, 64, 26, RED, 1);
-  f3d_lcd_drawCircle(15, 64, 79, GREEN, 1);
-  f3d_lcd_drawCircle(15, 64, 132, BLUE, 1);
-  f3d_lcd_drawChar(62, 23, 'X', WHITE, RED);
-  f3d_lcd_drawChar(62, 76, 'Y', WHITE, GREEN);
-  f3d_lcd_drawChar(62, 129, 'Z', WHITE, BLUE);
-
+  
+  accel_visualization();
+  int mode = 0;
   while (1) {
-    f3d_accel_read(accel_data);
+    delay(250);
+    if(button_read()) {
+      f3d_lcd_fillScreen(BLACK);
+      if (mode == 0) {
+	mode = 1;	
+	f3d_lcd_drawCircle(60, 64, 80, RED, 0);
+      } else {
+	mode = 0;
+	accel_visualization();
+      }
+    }
     
-    // f3d_mag_read(mag_data);
-    // display_raw_data(accel_data, mag_data);
-    accel_rawdata_to_radians(accel_data, accel_rads);
-    /* int i; */
-    /* for (i = 0; i < 5; i++) { */
-    /*   float temp = -0.1 - (i * 0.5); */
-    /*   f3d_lcd_drawSemicircle(21, 64, 26, RED, &temp); */
-    /*   delay(1000); */
-    /* } */
-    f3d_lcd_drawSemicircle(21, 64, 26, RED, &accel_rads[0]);
-    f3d_lcd_drawSemicircle(21, 64, 79, GREEN, &accel_rads[1]);
-    f3d_lcd_drawSemicircle(21, 64, 132, BLUE, &accel_rads[2]);
-    delay(100);
-    // printf("drawsemicircles\n");
-    f3d_lcd_drawSemicircle(21, 64, 26, BLACK, &accel_rads[0]);  
-    f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &accel_rads[1]); 
-    f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &accel_rads[2]);
-    // printf("clearCircles\n");
-
+    if (mode == 0) {
+      f3d_accel_read(accel_data);    
+      // display_raw_data(accel_data, mag_data);
+      accel_rawdata_to_radians(accel_data, accel_rads);
+      f3d_lcd_drawSemicircle(21, 64, 26, RED, &accel_rads[0]);
+      f3d_lcd_drawSemicircle(21, 64, 79, GREEN, &accel_rads[1]);
+      f3d_lcd_drawSemicircle(21, 64, 132, BLUE, &accel_rads[2]);
+      delay(100);
+      f3d_lcd_drawSemicircle(21, 64, 26, BLACK, &accel_rads[0]);  
+      f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &accel_rads[1]); 
+      f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &accel_rads[2]);
+    } else {
+      f3d_mag_read(mag_data);
+      display_raw_data(accel_data, mag_data);
+    }
   }  
 
 }
