@@ -68,6 +68,8 @@ void display_raw_data(float accel_data[], float mag_data[]) {
   delay(2000);
 }
 
+void 
+
 int main(void) {
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
@@ -89,10 +91,11 @@ int main(void) {
   while (1) {
     f3d_accel_read(accel_data);
     f3d_mag_read(mag_data);
-    // display_raw_data(accel_data, mag_data);
+    display_raw_data(accel_data, mag_data);
     f3d_lcd_drawCircle(10, 64, 80, RED, 0);
-    f3d_lcd_drawSemicircle(21, 64, 80, CYAN, 10);
-    f3d_lcd_drawSemicircle(21, 64, 80, CYAN, -10);
+    float test = 1.234;
+    // f3d_lcd_drawSemicircle(21, 64, 80, CYAN, test);
+    // f3d_lcd_drawSemicircle(21, 64, 80, CYAN, -2.6);
   }  
 
 }

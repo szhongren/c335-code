@@ -404,10 +404,11 @@ void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, ui
     } while(a <= b);
 }
 
-void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, char color, float magnitude) {
+void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float magnitude) {
   float radians = 0;
-  if (magnitude>= 0) {
+  if (magnitude >= 0) {
     for(radians = -M_PI/2; radians < -M_PI/2 + magnitude; radians += .01) {
+      printf("%f,%f\n", radians, magnitude);
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
       
