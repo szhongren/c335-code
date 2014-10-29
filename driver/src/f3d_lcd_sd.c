@@ -1,10 +1,14 @@
 /*
  * f3d_lcd_sd.c
  *
+ 
+ * Created By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
+ * Created Date: 10/17/14
  * Last Edited By: Zhongren Shao (shaoz) and Erin Leonhard (eeleonha)
- * Last Edited Date: 10/17/14
+ * Last Edited Date: 10/28/14
  *
- * Part of: C335 Lab 7
+ * Part of: C335 Lab 7, C335 Lab 8
+ *
  * Sets up the LCD and its interface for use in other programs 
  */
 
@@ -307,6 +311,7 @@ void f3d_lcd_drawString(uint8_t x, uint8_t y, char *c, uint16_t color, uint16_t 
   }
 }
 
+// draws a line from (x1, y1) to (x2, y2)
 void f3d_lcd_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color)
 {
    signed int  x, y, addx, addy, dx, dy;
@@ -370,6 +375,7 @@ void f3d_lcd_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t c
    }
 }
 
+// draws a circle centered at (x, y) with radius radius
 void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, uint8_t fill) {
    signed int a, b, P;
    a = 0;
@@ -402,76 +408,30 @@ void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, ui
       else
          P+= 5 + 2*(a++ - b--);
     } while(a <= b);
-   // delay(10);
 } 
 
+// draws (magnitude/PI) part of a semicircle centered at (x, y) with radius radius from the top
 void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude) {
   float radians = 0;
   float newmag = 2 * *magnitude;
-  // printf("Magnitude: %c %f\n", y > 100 ? 'z' : y > 60 ? 'y' : 'x', *magnitude);
   if (newmag >= 0) {
     for(radians = -M_PI/2; radians < -M_PI/2 + newmag; radians += .03) {
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
-      
       f3d_lcd_drawPixel(newx, newy, color);
-      /* display code */
     }
   } else {
     for(radians = -M_PI/2; radians > -M_PI/2 + newmag; radians -= .03) {
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
-      
       f3d_lcd_drawPixel(newx, newy, color);
-	/* display code */
       }
   }
-  // delay(10);
 }
 
-void f3d_lcd_eraseSemicircle(uint8_t radius, uint8_t x, uint8_t y, float *magnitude, float *prev_magnitude) {
-  float radians = 0;
-  float newmag = 2 * *magnitude;
-  float oldmag = 2 * *prev_magnitude;
-  // if different signs, cover up opposite side of circle
-  if (oldmag <= 0 && newmag > 0) {
-    for(radians = -M_PI/2; radians > -M_PI/2 + oldmag; radians -= .03) {
-      int newx = x + cos(radians) * radius;
-      int newy = y + sin(radians) * radius;
-      f3d_lcd_drawPixel(newx, newy, BLACK);
-    }
-  }
-  else if (oldmag >= 0 && newmag < 0) {
-    for(radians = -M_PI/2; radians < -M_PI/2 + oldmag; radians += .03) {
-      int newx = x + cos(radians) * radius;
-      int newy = y + sin(radians) * radius;
-      f3d_lcd_drawPixel(newx, newy, BLACK);
-    }
-  }
-  else {
-    if (newmag >= 0) {
-      for(radians = -M_PI/2; radians < M_PI/2 + newmag; radians -= .03) {
-	int newx = x + cos(radians) * radius;
-	int newy = y + sin(radians) * radius;
-	
-	f3d_lcd_drawPixel(newx, newy, BLACK);
-	/* display code */
-      }
-    } else {
-      for(radians = -M_PI/2; radians > M_PI/2 + newmag; radians += .03) {
-	int newx = x + cos(radians) * radius;
-	int newy = y + sin(radians) * radius;
-	
-	f3d_lcd_drawPixel(newx, newy, BLACK);
-	/* display code */
-      }
-    }
-  }
-  // delay(10);
-}
-
-void f3d_lcd_placeDotOnCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude) {
-  float newmag = *magnitude - (M_PI/2);
+// draws a dot on a circle that has radius radius centered at (x, y) at positon (-magnitude + offset)
+void f3d_lcd_placeDotOnCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude, float *offset){
+  float newmag = -*magnitude + *offset;
   int newx = x + cos(newmag) * radius;
   int newy = y + sin(newmag) * radius;
   f3d_lcd_drawCircle(3, newx, newy, color, 1);
