@@ -256,14 +256,14 @@ int main(void) {
       break;
     case 3:
       nun_rawdata_to_radians(&nun_data, nun_rads);
-      f3d_lcd_drawSemicircle(21, 64, 26, RED, &nun_rads[0]);
-      f3d_lcd_drawSemicircle(21, 64, 79, GREEN, &nun_rads[1]);
-      f3d_lcd_drawSemicircle(21, 64, 132, BLUE, &nun_rads[2]);
+      f3d_lcd_drawSemicircle2(21, 64, 26, RED, &nun_rads[0]);
+      f3d_lcd_drawSemicircle2(21, 64, 79, GREEN, &nun_rads[1]);
+      f3d_lcd_drawSemicircle2(21, 64, 132, BLUE, &nun_rads[2]);
       delay(200);
       // erase semicircles
-      f3d_lcd_drawSemicircle(21, 64, 26, BLACK, &nun_rads[0]);  
-      f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &nun_rads[1]); 
-      f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &nun_rads[2]);
+      f3d_lcd_drawSemicircle2(21, 64, 26, BLACK, &nun_rads[0]);  
+      f3d_lcd_drawSemicircle2(21, 64, 79, BLACK, &nun_rads[1]); 
+      f3d_lcd_drawSemicircle2(21, 64, 132, BLACK, &nun_rads[2]);
       break;
     }
     delay(100);

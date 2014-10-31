@@ -276,20 +276,6 @@ void f3d_lcd_fillScreen(uint16_t color) {
   }
 }
 
-void f3d_lcd_drawRect(uint8_t x, uint8_t y, uint16_t color, int height, int width, int fill) {
-  if (fill) {
-    int i = 0;
-    for (i = 0; i < width; i++) {
-      f3d_lcd_drawLine(x + i, y, x + i, y + height, color);
-    }
-  } else {
-    f3d_lcd_drawLine(x, y, x, y + height, color);
-    f3d_lcd_drawLine(x, y, x + width, y, color);
-    f3d_lcd_drawLine(x + width, y + height, x , y + height, color);
-    f3d_lcd_drawLine(x + width, y + height, x + width, y, color);
-  }
-}
-
 inline void f3d_lcd_drawPixel(uint8_t x, uint8_t y, uint16_t color) {
   if ((x >= ST7735_width) || (y >= ST7735_height)) return;
   f3d_lcd_setAddrWindow(x,y,x+1,y+1,MADCTLGRAPHICS);
@@ -389,6 +375,20 @@ void f3d_lcd_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t c
    }
 }
 
+void f3d_lcd_drawRect(uint8_t x, uint8_t y, uint16_t color, int height, int width, int fill) {
+  if (fill) {
+    int i = 0;
+    for (i = 0; i < width; i++) {
+      f3d_lcd_drawLine(x + i, y, x + i, y + height, color);
+    }
+  } else {
+    f3d_lcd_drawLine(x, y, x, y + height, color);
+    f3d_lcd_drawLine(x, y, x + width, y, color);
+    f3d_lcd_drawLine(x + width, y + height, x , y + height, color);
+    f3d_lcd_drawLine(x + width, y + height, x + width, y, color);
+  }
+}
+
 // draws a circle centered at (x, y) with radius radius
 void f3d_lcd_drawCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, uint8_t fill) {
    signed int a, b, P;
@@ -436,6 +436,41 @@ void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color
     }
   } else {
     for(radians = -M_PI/2; radians > -M_PI/2 + newmag; radians -= .03) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      f3d_lcd_drawPixel(newx, newy, color);
+      }
+  }
+}
+
+void f3d_lcd_eraseSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude) {
+  float radians = 0;
+  float newmag = 2 * *magnitude;
+  if (newmag >= 0) {
+    for(radians = -M_PI/2 + newmag; radians < M_PI; radians += .03) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      f3d_lcd_drawPixel(newx, newy, color);
+    }
+  } else {
+    for(radians = -M_PI/2 + newmag; radians > -M_PI; radians -= .03) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      f3d_lcd_drawPixel(newx, newy, color);
+      }
+  }
+}
+
+void f3d_lcd_drawSemicircle2(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude) {
+  float radians = 0;
+  if (*magnitude >= 0) {
+    for(radians = -M_PI/2 - *magnitude; radians < -M_PI/2 + *magnitude; radians += .03) {
+      int newx = x + cos(radians) * radius;
+      int newy = y + sin(radians) * radius;
+      f3d_lcd_drawPixel(newx, newy, color);
+    }
+  } else {
+    for(radians = M_PI/2 - *magnitude; radians > M_PI/2 + *magnitude; radians -= .03) {
       int newx = x + cos(radians) * radius;
       int newy = y + sin(radians) * radius;
       f3d_lcd_drawPixel(newx, newy, color);
