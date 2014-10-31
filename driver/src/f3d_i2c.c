@@ -94,12 +94,14 @@ void f3d_i2c1_write(uint8_t device, uint8_t reg, uint8_t* value) {
 void f3d_i2c1_read_nunchuk (uint8_t device, uint8_t* buffer, uint16_t numbytes) {
 
   while (I2C_GetFlagStatus(I2C1, I2C_ISR_BUSY) != RESET);                                   
-  I2C_TransferHandling(I2C1, 0xA4, 1, I2C_AutoEnd_Mode, I2C_Generate_Start_Write);          
+  I2C_TransferHandling(I2C1, 0xA4, 1, I2C_AutoEnd_Mode, I2C_Generate_Start_Write); // different here         
   while (I2C_GetFlagStatus(I2C1, I2C_ISR_TXIS) == RESET);                                   
-  I2C_SendData(I2C1,0x00);                                                                  
+  I2C_SendData(I2C1,0x00);                                                                
   while(I2C_GetFlagStatus(I2C1, I2C_ISR_STOPF) == RESET);
   I2C_ClearFlag(I2C1, I2C_ICR_STOPCF);
+  // wait for stop flag here
   delay(1);
+
   while (I2C_GetFlagStatus(I2C1, I2C_ISR_BUSY) != RESET);                                   
   I2C_TransferHandling(I2C1, 0xA4, 6, I2C_AutoEnd_Mode, I2C_Generate_Start_Read);
   while (numbytes--) {

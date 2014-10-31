@@ -40,6 +40,9 @@
 
 #define NUNCHUK_ADDRESS 0xA4
 
+#define NUN_X_MID 140
+#define NUN_Y_MID 137
+
 void f3d_nunchuk_init(void) {
   uint8_t realb = 0x00;
   uint8_t buf = 0x55;
@@ -94,5 +97,38 @@ void f3d_nunchuk_read(nunchuk_t *n) {
   }
   //  printf("n->c=%d n->z=%d n->jx=%d n->jy=%d n->ax=%d n->ay=%d n->az=%d\n",n->c,n->z,n->jx,n->jy,n->ax,n->ay,n->az);
 }
+void f3d_nunchuk_display_data(nunchuk_t *nun_data) {
+  printf("jx: %u\n", nun_data->jx);
+  printf("jy: %u\n", nun_data->jy);
+  printf("ax: %u\n", nun_data->ax);
+  printf("ay: %u\n", nun_data->ay);
+  printf("az: %u\n", nun_data->az);
+  printf("z: %u\n", nun_data->z);
+  printf("c: %u\n", nun_data->c);
+}
 
+int f3d_c_pressed(nunchuk_t *nun_data) {
+  return nun_data->c;
+}
+
+int f3d_z_pressed(nunchuk_t *nun_data) {
+  return nun_data->z;
+}
+
+int f3d_j_right(nunchuk_t *nun_data) {
+  return nun_data->jx > NUN_X_MID + 70;
+}
+
+int f3d_j_left(nunchuk_t *nun_data) {
+  return nun_data->jx < NUN_X_MID - 70;
+}
+
+int f3d_nunchuk_change_mode(nunchuk_t *nun_data) {
+  if (f3d_c_pressed(nun_data) || f3d_j_right(nun_data))
+    return 1;
+  else if (f3d_z_pressed(nun_data) || f3d_j_left(nun_data))
+    return -1;
+  else
+    return 0;
+}
 /* f3d_nunchuk.c ends here */

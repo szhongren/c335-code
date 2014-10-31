@@ -157,6 +157,7 @@ int main(void) {
       f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &accel_rads[1]); 
       f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &accel_rads[2]);
     } else {// compass mode
+      f3d_accel_read(accel_data);
       f3d_mag_read(mag_data);
       // display_raw_data(accel_data, mag_data);
       float heading;

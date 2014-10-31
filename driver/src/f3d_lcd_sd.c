@@ -276,6 +276,20 @@ void f3d_lcd_fillScreen(uint16_t color) {
   }
 }
 
+void f3d_lcd_drawRect(uint8_t x, uint8_t y, uint16_t color, int height, int width, int fill) {
+  if (fill) {
+    int i = 0;
+    for (i = 0; i < width; i++) {
+      f3d_lcd_drawLine(x + i, y, x + i, y + height, color);
+    }
+  } else {
+    f3d_lcd_drawLine(x, y, x, y + height, color);
+    f3d_lcd_drawLine(x, y, x + width, y, color);
+    f3d_lcd_drawLine(x + width, y + height, x , y + height, color);
+    f3d_lcd_drawLine(x + width, y + height, x + width, y, color);
+  }
+}
+
 inline void f3d_lcd_drawPixel(uint8_t x, uint8_t y, uint16_t color) {
   if ((x >= ST7735_width) || (y >= ST7735_height)) return;
   f3d_lcd_setAddrWindow(x,y,x+1,y+1,MADCTLGRAPHICS);
@@ -431,7 +445,7 @@ void f3d_lcd_drawSemicircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color
 
 // draws a dot on a circle that has radius radius centered at (x, y) at positon (-magnitude + offset)
 void f3d_lcd_placeDotOnCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t color, float *magnitude, float *offset){
-  float newmag = -*magnitude + *offset;
+  float newmag = -*magnitude + *offset - M_PI/18;
   int newx = x + cos(newmag) * radius;
   int newy = y + sin(newmag) * radius;
   f3d_lcd_drawCircle(3, newx, newy, color, 1);
