@@ -1,0 +1,21 @@
+// GDB Checkpoint 1
+r0            0x20000000536870912
+r1            0x00
+r2            0x8000000        134217728
+r3            0xe000ed003758157056
+r4            0x00
+r5            0x00
+r6            0x00
+r7            0x00
+r8            0x00
+r9            0x00
+r10           0x00
+r11           0x00
+r12           0x00
+sp            0x2000a0000x2000a000
+lr            0x80115bf        134288831
+pc            0x8000434        0x8000434 <main>
+cpsr          0x610000001627389952
+
+// GDB Checkpoint 2
+Breakpoint 2, encryptStr (phrase=<optimized out>, phrase@entry=0x8012030 "cow",	key=key@entry=0x8012034 "PIG", ncrypt=ncrypt@entry=0x20009ff4 "3&0P\031\016\027Ih<f&"<Address 0x2000a000 out of bounds>) at main.c:63

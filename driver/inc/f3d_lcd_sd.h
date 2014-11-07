@@ -54,8 +54,8 @@
 #define LCD_CS_DEASSERT()  GPIO_SetBits(GPIOB, GPIO_Pin_12)
 
 // Create these macros needed for the SD card interface in the ff9b code
-// #define SD_CS_HIGH() 
-// #define SD_CS_LOW()  
+#define SD_CS_HIGH() GPIO_SetBits(GPIOB, GPIO_Pin_8)
+#define SD_CS_LOW() GPIO_ResetBits(GPIOB, GPIO_Pin_8)
 
 #define GPIO_PIN_SCE GPIO_Pin_12    
 
@@ -83,13 +83,13 @@
 #define LCD_D HIGH
 
 #define BLACK 0x0000
-#define BLUE 0x001F
-#define GREEN 0x07E0
-#define CYAN 0x07FF
-#define RED 0xF800
-#define MAGENTA 0xF81F
-#define YELLOW 0xFFE0
-#define WHITE 0xFFFF
+#define BLUE 0x001F    // 0000 0000 0001 1111
+#define GREEN 0x07E0   // 0000 0111 1110 0000
+#define CYAN 0x07FF    // 0000 0111 1111 1111
+#define RED 0xF800     // 1111 1000 0000 0000
+#define MAGENTA 0xF81F // 1111 1000 0001 1111
+#define YELLOW 0xFFE0  // 1111 1111 1110 0000
+#define WHITE 0xFFFF   // 1111 1111 1111 1111
 
 void f3d_lcd_sd_interface_init(void);
 void f3d_lcd_init(void);

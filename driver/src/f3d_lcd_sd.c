@@ -18,6 +18,12 @@
 #include <glcdfont.h>
 #include <math.h>
 
+typedef struct bmpPix {
+  uint8_t b;
+  uint8_t g;
+  uint8_t r;
+} bmppixel;
+
 static uint8_t madctlcurrent = MADVAL(MADCTLGRAPHICS);
 
 
@@ -39,6 +45,7 @@ void f3d_lcd_sd_interface_init(void) {
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
   //configuration of MISO, MOSI, SCK
   GPIO_StructInit(&GPIO_InitStructure);
+
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
   /********* CONFIGURE MODE HERE (4.2.1) ***********************/
   // use AF Mode for Pins 13..15
@@ -52,16 +59,29 @@ void f3d_lcd_sd_interface_init(void) {
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_5);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_5);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_5);
-
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-  
   /********* Call GPIO_Init function here (4.2.3) **************/
   // Init the Pins we just configured
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   // Section 4.2 Pin Configuration for CS, RESET, RS, BKL
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | 
     GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
+  /********* CONFIGURE MODE HERE (4.2.1) ***********************/
+  // Use OUT Mode for the above Pins, 9..12
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
+  /**********Call the GPIO_Init function (4.2.3)  *************/
+  // Init the Pins we just configured
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+  // Section 4.2 Pin Configuration for CS, RESET, RS, BKL
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
   /********* CONFIGURE MODE HERE (4.2.1) ***********************/
   // Use OUT Mode for the above Pins, 9..12
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -484,5 +504,20 @@ void f3d_lcd_placeDotOnCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t col
   int newx = x + cos(newmag) * radius;
   int newy = y + sin(newmag) * radius;
   f3d_lcd_drawCircle(3, newx, newy, color, 1);
+}
+uint8_t convert_channel(uint8_t color, uint8_t is_green) {
+  if (is_green) {
+    return (uint8_t)(((float)color / 255.0) * 63);
+  } else {
+    return (uint8_t)(((float)color / 255.0) * 31);
+  }
+}
+
+uint32_t convert_pixel(bmppixel *p) {
+  uint8_t R = convert_channel(p->r, 0);
+  uint8_t G = convert_channel(p->g, 1);
+  uint8_t B = convert_channel(p->b, 0);
+  uint32_t pix = ((R & 0x1F) << 11) + ((G & 0x3F) << 5) + (B & 0x1F);
+  return pix;
 }
 /* f3d_lcd_sd.c ends here */

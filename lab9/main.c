@@ -1,29 +1,21 @@
-/* main.c --- 
- * 
- * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
+/* 
+ * main.c
+ *
+ * Part Of: C335 Lab 9
+ *
+ * Authors: Erin Leonhard (eeleonha), Zhongren Shao (shaoz)
+ * Date Created: 10/31/14
+ * Last Edited By:  Erin Leonhard (eeleonha), Zhongren Shao (shaoz)
+ * Date Last Edited: 10/31/14
+ *
+ * The followwing definitions make it possible to cycle through four different
+ * visualizations using the buttons and joystick of a nunchuk:
+ *    1. gyroscope
+ *    2. board accelerometer
+ *    3. tilt-compensated compass
+ *    4. nunchuk accelerometer
+*/
 
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-/* Code: */
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
 #include <f3d_usr_btn.h>
 #include <f3d_uart.h>
@@ -58,6 +50,7 @@ void mag_rawdata_to_heading(float accel_data[], float mag_data[], float *heading
   *heading = atan(y_h/x_h);
 }
 
+// converts raw data from nunchuk to radians for use in visualization
 void nun_rawdata_to_radians(nunchuk_t *nun_data, float rads[]) {
   float ax = nun_data->ax - 512;
   float ay = nun_data->ay - 512;
@@ -104,6 +97,7 @@ void compass_visualization() {
   f3d_lcd_drawChar(8, 78, 'W', RED, BLACK);
 }
 
+// paints static parts of nunchuk accel visual
 void nun_accel_visualization() { 
   char *mode = "NUNCHUK";
   f3d_lcd_drawString(10, 0, mode, WHITE, BLACK);
@@ -118,6 +112,7 @@ void nun_accel_visualization() {
   f3d_lcd_drawChar(62, 129, 'Z', WHITE, BLUE);
 }
 
+// handles changing between different visualizations
 int change_mode(int *mode, int change) {
   if (*mode == 3) {
     if (change == 1) {
@@ -136,6 +131,7 @@ int change_mode(int *mode, int change) {
   }
 }
 
+// main
 int main(void) { 
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
@@ -160,9 +156,12 @@ int main(void) {
   
   nunchuk_t nun_data;
   int mode = 0;
+  // flag to keep track if button has been pressed already
   int FLAG_btn_pressed = 0;
+  // set up first visualization
   f3d_lcd_fillScreen(BLACK);
   gyro_visualization();
+  // set up the visualization corresponding to current mode
   while (1) {
     f3d_nunchuk_read(&nun_data);
     
@@ -199,7 +198,9 @@ int main(void) {
     float mag_data[3];
     float nun_rads[3];
     
+    // read data and show it on LCD
     switch(mode) {
+    // gyroscope visualization
     case 0:
       // get gyro readings
       f3d_gyro_getdata(fArr);
@@ -231,6 +232,7 @@ int main(void) {
 	centerBars += nextBar;
       }
       break;
+    // accelerometer visualization 
     case 1:
       f3d_accel_read(accel_data);    
       accel_rawdata_to_radians(accel_data, accel_rads);
@@ -243,6 +245,7 @@ int main(void) {
       f3d_lcd_drawSemicircle(21, 64, 79, BLACK, &accel_rads[1]); 
       f3d_lcd_drawSemicircle(21, 64, 132, BLACK, &accel_rads[2]);
       break;
+    // compass visualization
     case 2:
       f3d_accel_read(accel_data);
       f3d_mag_read(mag_data);
@@ -254,6 +257,7 @@ int main(void) {
       // erase dot
       f3d_lcd_placeDotOnCircle(30, 64, 80, BLACK, &heading, &offset);
       break;
+    // nunchuk accelerometer visualization
     case 3:
       nun_rawdata_to_radians(&nun_data, nun_rads);
       f3d_lcd_drawSemicircle2(21, 64, 26, RED, &nun_rads[0]);

@@ -1,38 +1,15 @@
-/* f3d_nunchuk.c --- 
+/*
+ * f3d_nunchuk.c
+ *
+ * Part Of: C335 Lab 9
+ *
+ * Last Edited By: Erin Leonhard (eeleonha), Zhongren Shao (shaoz)
+ * Last Edited Date: 10/31/14
  * 
- * Filename: f3d_nunchuk.c
- * Description: 
- * Author: Bryce Himebaugh
- * Maintainer: 
- * Created: Thu Oct 31 09:40:37 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
+ * The definitions below read from the nunchuk and check for different
+ * variables like the buttons being pressed or the joystick being moved.
+*/
 
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
- */
-
-/* Copyright (c) 2004-2007 The Trustees of Indiana University and 
- * Indiana University Research and Technology Corporation.  
- * 
- * All rights reserved. 
- * 
- * Additional copyrights may follow 
- */
-
-/* Code: */
 
 #include <f3d_i2c.h>
 #include <f3d_nunchuk.h>
@@ -97,6 +74,8 @@ void f3d_nunchuk_read(nunchuk_t *n) {
   }
   //  printf("n->c=%d n->z=%d n->jx=%d n->jy=%d n->ax=%d n->ay=%d n->az=%d\n",n->c,n->z,n->jx,n->jy,n->ax,n->ay,n->az);
 }
+
+// prints out the data from the nunchuk
 void f3d_nunchuk_display_data(nunchuk_t *nun_data) {
   printf("jx: %u\n", nun_data->jx);
   printf("jy: %u\n", nun_data->jy);
@@ -107,22 +86,28 @@ void f3d_nunchuk_display_data(nunchuk_t *nun_data) {
   printf("c: %u\n", nun_data->c);
 }
 
+// is the c button pressed
 int f3d_c_pressed(nunchuk_t *nun_data) {
   return nun_data->c;
 }
 
+// is the z button pressed
 int f3d_z_pressed(nunchuk_t *nun_data) {
   return nun_data->z;
 }
 
+// has the joystick been moved right
 int f3d_j_right(nunchuk_t *nun_data) {
   return nun_data->jx > NUN_X_MID + 70;
 }
 
+// has the joystick been moved left
 int f3d_j_left(nunchuk_t *nun_data) {
   return nun_data->jx < NUN_X_MID - 70;
 }
 
+// checks for the presence of certain variables with the
+// nunchuk to know if the mode should change
 int f3d_nunchuk_change_mode(nunchuk_t *nun_data) {
   if (f3d_c_pressed(nun_data) || f3d_j_right(nun_data))
     return 1;
