@@ -80,15 +80,14 @@ int find_quadrant(float accel_rads[]) {
     }
   }
 }
-
 int main(void) { 
   char footer[20];
   int count=0;
   int i;
 
   FRESULT rc;			/* Result code */
-  DIR dir;			/* Directory object */
-  FILINFO fno;			/* File information object */
+  DIR dir;			   	  /* Directory object */
+  FILINFO fno;				     	       /* File information object */
   UINT bw, br;
   unsigned int retval;
 
@@ -102,11 +101,11 @@ int main(void) {
   f3d_rtc_init();
   f3d_i2c1_init();
   
-  f3d_nunchuk_init();
+  // f3d_nunchuk_init();
   delay(10);
   f3d_accel_init();
   delay(10);
-
+  
   f_mount(0, &Fatfs);		/* Register volume work area (never fails) */
   nunchuk_t nun_data;
   int mode = 0;
@@ -118,52 +117,14 @@ int main(void) {
     int change;
     /* f3d_nunchuk_read(&nun_data); */
     /* change = f3d_nunchuk_change_mode(&nun_data); */
-
     /* if (change) { */
     /*   if (!FLAG_btn_pressed) { */
-    /* 	change_mode(&mode, change); */
-    /* 	FLAG_btn_pressed = 1; */
+    /*   change_mode(&mode, change); */
+    /*   FLAG_btn_pressed = 1; */
     /*   } */
     /* } else { */
     /*   FLAG_btn_pressed = 0; */
     /* } */
-
-    while(1) { 
-      switch(mode) {
-      case 0:
-	rc = f_open(&Fil, "POKE1.BMP", FA_READ);
-	printf("mode 1\n");
-	break;
-      case 1:
-	rc = f_open(&Fil, "POKE2.BMP", FA_READ);
-	printf("mode 2\n");
-	break;
-      case 2:
-	rc = f_open(&Fil, "POKE3.BMP", FA_READ);
-	printf("mode 3\n");
-	break;
-      }	
-      
-      float accel_data[3];
-      float accel_rads[3];
-      f3d_accel_read(accel_data);    
-      accel_rawdata_to_radians(accel_data, accel_rads);
-      int direction = find_quadrant(accel_rads);
-      draw_pic(&Fil, direction, &br);
-      f_close(&Fil);
-      f3d_lcd_fillScreen(BLACK);
-      f3d_nunchuk_read(&nun_data);
-      change = f3d_nunchuk_change_mode(&nun_data);
-      delay(50);
-      if (change) {
-	if (!FLAG_btn_pressed) {
-	  change_mode(&mode, change);
-	  FLAG_btn_pressed = 1;
-	  break;
-	}
-      } else {
-	FLAG_btn_pressed = 0;
-      }
 
     switch(mode) {
     case 0:
@@ -179,101 +140,36 @@ int main(void) {
       printf("mode 3\n");
       break;
     }
-
+    
     float accel_data[3];
     float accel_rads[3];
-    f3d_accel_read(accel_data);    
+    f3d_accel_read(accel_data);  
     accel_rawdata_to_radians(accel_data, accel_rads);
     int direction = find_quadrant(accel_rads);
     draw_pic(&Fil, direction, &br);
     f_close(&Fil);
     
-    // look for change in state
+    
+    
+    
+    // ********************************************
+    // ***************** CHANGE *******************
+    // ********************************************
     while (1) {
       float new_accel_data[3];
       float new_accel_rads[3];
-      f3d_accel_read(new_accel_data);
+      f3d_accel_read(new_accel_data);  
       accel_rawdata_to_radians(new_accel_data, new_accel_rads);
-      int new_direction = find_quadrant(new_accel_data);
-      f3d_nunchuk_read(&nun_data);
-      if (new_direction != direction || f3d_nunchuk_change_mode(&nun_data)) {
-	break;
+      int new_direction = find_quadrant(new_accel_rads);
+      // f3d_nunchuk_read(&nun_data);
+      // change = f3d_nunchuk_change_mode(&nun_data);
+      if (new_direction != direction/* || change*/) {
+        break;
       }
     }
-
-    /* while(1) { */
-    /*   printf("In while loop"); */
-    /*   f3d_accel_read(accel_data);     */
-    /*   accel_rawdata_to_radians(accel_data, accel_rads); */
-    /*   int new_direction = find_quadrant(accel_rads); */
-    /*   if (new_direction != direction) { */
-    /* 	direction = new_direction; */
-    /* 	break; */
-    /*   } */
-    /*   f3d_nunchuk_read(&nun_data); */
-    /*   change = f3d_nunchuk_change_mode(&nun_data); */
-    /*   if (change) { */
-    /* 	if (!FLAG_btn_pressed) { */
-    /* 	  change_mode(&mode, change); */
-    /* 	  FLAG_btn_pressed = 1; */
-    /* 	} */
-    /*   } else { */
-    /* 	FLAG_btn_pressed = 0; */
-    /*   } */
-    /*   break; */
-    /* } */
+    // ********************************************
+    // ********************************************
   }
-
-  /* printf("\nOpen an existing file (message.txt).\n"); */
-  /*   rc = f_open(&Fil, "MESSAGE.TXT", FA_READ); */
-  /* if (rc) die(rc); */
- 
-  /* printf("\nType the file content.\n"); */
-  /* for (;;) { */
-  /*   rc = f_read(&Fil, Buff, sizeof Buff, &br);	/\* Read a chunk of file *\/ */
-  /*   if (rc || !br) break;			/\* Error or end of file *\/ */
-  /*   for (i = 0; i < br; i++)		        /\* Type the data *\/ */
-  /*     putchar(Buff[i]); */
-  /* } */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nClose the file.\n"); */
-  /* rc = f_close(&Fil); */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nCreate a new file (hello.txt).\n"); */
-  /* rc = f_open(&Fil, "HELLO.TXT", FA_WRITE | FA_CREATE_ALWAYS); */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nWrite a text data. (Hello world!)\n"); */
-  /* rc = f_write(&Fil, "Hello world!\r\n", 14, &bw); */
-  /* if (rc) die(rc); */
-  /* printf("%u bytes written.\n", bw); */
-  
-  /* printf("\nClose the file.\n"); */
-  /* rc = f_close(&Fil); */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nOpen root directory.\n"); */
-  /* rc = f_opendir(&dir, ""); */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nDirectory listing...\n"); */
-  /* for (;;) { */
-  /*   rc = f_readdir(&dir, &fno);		/\* Read a directory item *\/ */
-  /*   if (rc || !fno.fname[0]) break;	/\* Error or end of dir *\/ */
-  /*   if (fno.fattrib & AM_DIR) */
-  /*     printf("   <dir>  %s\n", fno.fname); */
-  /*   else */
-  /*     printf("%8lu  %s\n", fno.fsize, fno.fname); */
-  /* } */
-  /* if (rc) die(rc); */
-  
-  /* printf("\nTest completed.\n"); */
-
-  /* rc = disk_ioctl(0,GET_SECTOR_COUNT,&retval); */
-  /* printf("%d %d\n",rc,retval); */
-
 }
 
 #ifdef USE_FULL_ASSERT
