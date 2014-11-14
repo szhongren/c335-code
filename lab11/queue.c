@@ -45,7 +45,7 @@
 
 /* Code: */
 
-#include "queue.h"
+#include <queue.h>
 
 void init_queue(queue_t *buf) {
   buf->head = 0;

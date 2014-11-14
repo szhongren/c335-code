@@ -54,8 +54,10 @@ typedef struct queue {
 } queue_t;
 
 void init_queue(queue_t *);
+int queue_next(int);
 int enqueue(queue_t *, int);
-int dequeue(queue_t *);            
+int dequeue(queue_t *);
+int queue_full(queue_t *);            
 int queue_empty(queue_t *);            
 
 /* queue.h ends here */

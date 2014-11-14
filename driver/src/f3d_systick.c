@@ -37,10 +37,12 @@
 #include <f3d_systick.h>
 #include <f3d_led.h> 
 #include <f3d_usr_btn.h>
+#include <queue.h>
 
 volatile int systick_flag = 0;
 volatile int flag = 0; 
 
+extern queue_t txbuf, rxbuf;
 static __IO uint32_t TimingDelay;
 
 void f3d_systick_init(int inter_per_sec) {

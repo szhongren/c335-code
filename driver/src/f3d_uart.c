@@ -12,6 +12,8 @@
 
 #include <stm32f30x.h>
 #include <f3d_led.h>
+#include <queue.h>
+#include <stm32f30x_misc.h>
 
 queue_t txbuf, rxbuf;
 

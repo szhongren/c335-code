@@ -12,6 +12,7 @@ OBJS=  $(STARTUP) 	main.o \
 			f3d_uart.o \
 			f3d_usr_btn.o \
 			f3d_systick.o \
+			queue.o \
 			glcdfont.o \
 			stm32f30x_rcc.o \
 			stm32f30x_gpio.o \
@@ -21,6 +22,7 @@ OBJS=  $(STARTUP) 	main.o \
 			stm32f30x_rtc.o \
 			stm32f30x_tim.o \
 			stm32f30x_pwr.o \
+			stm32f30x_misc.o \
 			newlib_stubs.o
 # include common make file
 
