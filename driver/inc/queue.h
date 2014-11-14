@@ -1,10 +1,10 @@
-/* queue.c --- 
+/* queue.h --- 
  * 
- * Filename: queue.c
+ * Filename: queue.h
  * Description: 
  * Author: Bryce Himebaugh
  * Maintainer: 
- * Created: Thu Feb  7 19:49:26 2013 (-0500)
+ * Created: Thu Feb  7 19:47:41 2013 (-0500)
  * Version: 
  * Last-Updated: 
  *           By: 
@@ -45,47 +45,19 @@
 
 /* Code: */
 
-#include <queue.h>
+#define QUEUE_SIZE 32
 
-void init_queue(queue_t *buf) {
-  buf->head = 0;
-  buf->tail = buf->head;
-}
+typedef struct queue {
+  int head;
+  int tail;
+  int buffer[QUEUE_SIZE];
+} queue_t;
 
-int queue_next(int index) {
-  if (index == QUEUE_SIZE - 1)
-    return 0;
-  else
-    return index + 1;
-}
+void init_queue(queue_t *);
+int queue_next(int);
+int enqueue(queue_t *, int);
+int dequeue(queue_t *);
+int queue_full(queue_t);            
+int queue_empty(queue_t *);            
 
-int enqueue (queue_t *buf, int data) {
-  if (queue_full(buf))
-    return 0;
-  else {
-    buf->buffer[buf->tail] = data;
-    buf->tail = queue_next(buf->tail);
-    return 1;
-  }
-}
-
-int dequeue (queue_t *buf) {
-  if (queue_empty(buf))
-    return 0;
-  else {
-    int out = buf->buffer[buf->head];
-    buf->head = queue_next(buf->head);
-    return out;
-  }
-}
-
-int queue_full(queue_t *buf) {
-  return queue_next(buf->tail) == buf->head;
-}
-
-int queue_empty(queue_t *buf) {
-  return buf->head == buf->tail;
-}
-
-
-/* queue.c ends here */
+/* queue.h ends here */

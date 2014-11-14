@@ -87,8 +87,7 @@ void USART1_IRQHandler(void) {
 // putschar from UART to serialT
 int putchar(int c) {
   // doesn't send data until USART is available
-  while (USART_GetFlagStatus(USART1,USART_FLAG_TXE) == (uint16_t)RESET);
-
+  //while (USART_GetFlagStatus(USART1,USART_FLAG_TXE) == (uint16_t)RESET);
   // send data to UART
   // USART_SendData(USART1, c);
   enqueue(&txbuf, c);
@@ -98,8 +97,7 @@ int putchar(int c) {
 // getschar from serialT to UART
 int getchar(void) {
   // ditto as putchar
-  if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) != (uint16_t)RESET);
-
+  //if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) != (uint16_t)RESET);
   // recv data from UART
   char c = dequeue(&rxbuf);
   //USART_ReceiveData(USART1);

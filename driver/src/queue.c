@@ -53,7 +53,7 @@ void init_queue(queue_t *buf) {
 }
 
 int queue_next(int index) {
-  if (index == QUEUE_SIZE - 1)
+  if (index == QUEUE_SIZE)
     return 0;
   else
     return index + 1;

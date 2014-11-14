@@ -43,6 +43,7 @@ volatile int systick_flag = 0;
 volatile int flag = 0; 
 
 extern queue_t txbuf, rxbuf;
+
 static __IO uint32_t TimingDelay;
 
 void f3d_systick_init(int inter_per_sec) {
@@ -55,11 +56,15 @@ void systick_delay(int time) {
 }
 
 void SysTick_Handler(void) {
+  static int led = 8;
   if (TimingDelay != 0x00)
     TimingDelay--;
   if (!queue_empty(&txbuf)) {
     flush_uart();
   }
+  //enqueue(&rxbuf, dequeue(&txbuf));
+  f3d_led_off(led);
+  led = next_led(led);  
+  f3d_led_on(led);
 }
-
 /* f3d_systick.c ends here */
