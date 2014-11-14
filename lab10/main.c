@@ -165,9 +165,6 @@ int main(void) {
 	FLAG_btn_pressed = 0;
       }
 
-<<<<<<< Updated upstream
-    }
-=======
     switch(mode) {
     case 0:
       rc = f_open(&Fil, "POKE1.BMP", FA_READ);
@@ -204,7 +201,6 @@ int main(void) {
       }
     }
 
->>>>>>> Stashed changes
     /* while(1) { */
     /*   printf("In while loop"); */
     /*   f3d_accel_read(accel_data);     */
