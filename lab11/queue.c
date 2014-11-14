@@ -48,15 +48,43 @@
 #include "queue.h"
 
 void init_queue(queue_t *buf) {
+  buf->head = 0;
+  buf->tail = buf->head;
+}
+
+int queue_next(int index) {
+  if (index == QUEUE_SIZE)
+    return 0;
+  else
+    return index + 1;
 }
 
 int enqueue (queue_t *buf, int data) {
+  if (queue_full(buf))
+    return 0;
+  else {
+    buf->buffer[buf->tail] = data;
+    buf->tail = queue_next(buf->tail);
+    return 1;
+  }
 }
 
 int dequeue (queue_t *buf) {
+  if (queue_empty(buf))
+    return 0;
+  else {
+    int out = buf->buffer[buf->head];
+    buf->head = queue_next(buf->head);
+    return out;
+  }
+}
+
+int queue_full(queue_t *buf) {
+  return queue_next(buf->tail) == buf->head;
 }
 
 int queue_empty(queue_t *buf) {
+  return buf->head == buf->tail;
 }
 
 
