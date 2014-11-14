@@ -1,27 +1,13 @@
-/* main.c --- 
- * 
- * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
- * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
- */
-
-/* Change log:
- * 
- * 
+/*
+ * main.c
+ *
+ * Part Of: C335 Lab 10
+ * Authors: Erin Leonhard (eeleonha), Zhongren Shao (shaoz)
+ * Created: 11/7/14
+ * Last Edited: 11/14/14
+ *
+ * The definitions below handle drawing images from an SD card that can be 
+ * flipped in orientation of display and selected using a nunchuk.
  */
 /* Code: */
 
@@ -130,17 +116,17 @@ int main(void) {
   // rc = f_open(&Fil, "POKE1.BMP", FA_READ);
   while (1) {
     int change;
-    f3d_nunchuk_read(&nun_data);
-    change = f3d_nunchuk_change_mode(&nun_data);
+    /* f3d_nunchuk_read(&nun_data); */
+    /* change = f3d_nunchuk_change_mode(&nun_data); */
 
-    if (change) {
-      if (!FLAG_btn_pressed) {
-    	change_mode(&mode, change);
-    	FLAG_btn_pressed = 1;
-      }
-    } else {
-      FLAG_btn_pressed = 0;
-    }
+    /* if (change) { */
+    /*   if (!FLAG_btn_pressed) { */
+    /* 	change_mode(&mode, change); */
+    /* 	FLAG_btn_pressed = 1; */
+    /*   } */
+    /* } else { */
+    /*   FLAG_btn_pressed = 0; */
+    /* } */
 
     while(1) { 
       switch(mode) {
@@ -165,10 +151,10 @@ int main(void) {
       int direction = find_quadrant(accel_rads);
       draw_pic(&Fil, direction, &br);
       f_close(&Fil);
-
+      f3d_lcd_fillScreen(BLACK);
       f3d_nunchuk_read(&nun_data);
       change = f3d_nunchuk_change_mode(&nun_data);
-      
+      delay(50);
       if (change) {
 	if (!FLAG_btn_pressed) {
 	  change_mode(&mode, change);
@@ -179,7 +165,46 @@ int main(void) {
 	FLAG_btn_pressed = 0;
       }
 
+<<<<<<< Updated upstream
     }
+=======
+    switch(mode) {
+    case 0:
+      rc = f_open(&Fil, "POKE1.BMP", FA_READ);
+      printf("mode 1\n");
+      break;
+    case 1:
+      rc = f_open(&Fil, "POKE2.BMP", FA_READ);
+      printf("mode 2\n");
+      break;
+    case 2:
+      rc = f_open(&Fil, "POKE3.BMP", FA_READ);
+      printf("mode 3\n");
+      break;
+    }
+
+    float accel_data[3];
+    float accel_rads[3];
+    f3d_accel_read(accel_data);    
+    accel_rawdata_to_radians(accel_data, accel_rads);
+    int direction = find_quadrant(accel_rads);
+    draw_pic(&Fil, direction, &br);
+    f_close(&Fil);
+    
+    // look for change in state
+    while (1) {
+      float new_accel_data[3];
+      float new_accel_rads[3];
+      f3d_accel_read(new_accel_data);
+      accel_rawdata_to_radians(new_accel_data, new_accel_rads);
+      int new_direction = find_quadrant(new_accel_data);
+      f3d_nunchuk_read(&nun_data);
+      if (new_direction != direction || f3d_nunchuk_change_mode(&nun_data)) {
+	break;
+      }
+    }
+
+>>>>>>> Stashed changes
     /* while(1) { */
     /*   printf("In while loop"); */
     /*   f3d_accel_read(accel_data);     */
@@ -203,10 +228,6 @@ int main(void) {
     /* } */
   }
 
-
-  
-
-  
   /* printf("\nOpen an existing file (message.txt).\n"); */
   /*   rc = f_open(&Fil, "MESSAGE.TXT", FA_READ); */
   /* if (rc) die(rc); */

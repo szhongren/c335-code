@@ -94,6 +94,8 @@ void f3d_lcd_sd_interface_init(void) {
   // Init the Pins we just configured
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+  
+  SD_CS_HIGH();
 
   // Section 4.1 SPI2 configuration
   SPI_InitTypeDef SPI_InitStructure;
