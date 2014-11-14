@@ -28,4 +28,5 @@ f3d_lcd_sd.o: ../driver/src/f3d_lcd_sd.c ../driver/inc/f3d_lcd_sd.h \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_usart.h \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_wwdg.h \
  /l/arm2/STM32F3-Discovery_FW_V1.1.0/Libraries/STM32F30x_StdPeriph_Driver/inc/stm32f30x_misc.h \
- ../driver/inc/f3d_delay.h ../driver/inc/glcdfont.h
+ ../driver/inc/f3d_delay.h ../driver/inc/glcdfont.h ff9b/src/ff.h \
+ ff9b/src/integer.h ff9b/src/ffconf.h

@@ -17,8 +17,9 @@
 #include <f3d_delay.h>
 #include <glcdfont.h>
 #include <math.h>
+#include <ff.h>
 
-typedef struct bmpPix {
+typedef struct BMPPIXEL {
   uint8_t b;
   uint8_t g;
   uint8_t r;
@@ -505,11 +506,12 @@ void f3d_lcd_placeDotOnCircle(uint8_t radius, uint8_t x, uint8_t y, uint16_t col
   int newy = y + sin(newmag) * radius;
   f3d_lcd_drawCircle(3, newx, newy, color, 1);
 }
+
 uint8_t convert_channel(uint8_t color, uint8_t is_green) {
   if (is_green) {
-    return (uint8_t)(((float)color / 255.0) * 63);
+    return (uint8_t)((color / 255.0) * 63);
   } else {
-    return (uint8_t)(((float)color / 255.0) * 31);
+    return (uint8_t)((color / 255.0) * 31);
   }
 }
 
@@ -519,5 +521,49 @@ uint32_t convert_pixel(bmppixel *p) {
   uint8_t B = convert_channel(p->b, 0);
   uint32_t pix = ((R & 0x1F) << 11) + ((G & 0x3F) << 5) + (B & 0x1F);
   return pix;
+}
+
+void draw_pic(FIL *Fil, int direction, UINT *br) {
+  BYTE Buff[54];
+  FRESULT rc = f_read(Fil, Buff, 54, br);	/* Read a chunk of file */
+  if (rc || !br) return;
+  BYTE RowBuf[480];
+  BYTE PixelBuf[3];
+  int i_row, i_col;
+  for (i_row = 0; i_row < ST7735_height; i_row++) {
+    rc = f_read(Fil, RowBuf, sizeof RowBuf, br);
+    // if (rc || !br) break;
+    for (i_col = 0; i_col < ST7735_height; i_col++) {	/* Read a chunk of file */
+      // rc = f_read(&Fil, PixelBuf, sizeof PixelBuf, &br);
+      if (direction % 2 == 0) {
+	if (i_col < 16 || i_col > 144) {
+	  continue;
+	}
+      } else {
+	if (i_row < 16 || i_row > 144) {
+	  continue;
+	}
+      }
+      PixelBuf[0] = RowBuf[i_col*3];
+      PixelBuf[1] = RowBuf[i_col*3 + 1];
+      PixelBuf[2] = RowBuf[i_col*3 + 2];
+      uint32_t LCD_pixel = convert_pixel((bmppixel *) &PixelBuf);
+      // printf("%x\n", LCD_pixel);
+      switch(direction) {
+      case 0: // top of pic is top
+	f3d_lcd_drawPixel(i_col - 16, 159 - i_row, LCD_pixel);
+	break;
+      case 1: // left of pic is top
+	f3d_lcd_drawPixel(i_row - 16, i_col, LCD_pixel);
+	break;
+      case 2: // bot of pic is top
+	f3d_lcd_drawPixel(127 - (i_col - 16), i_row, LCD_pixel);
+	break;
+      case 3: // right of pic is top
+	f3d_lcd_drawPixel(127 - (i_row - 16), 159 - i_col, LCD_pixel);
+	break;
+      }
+    }
+  }
 }
 /* f3d_lcd_sd.c ends here */

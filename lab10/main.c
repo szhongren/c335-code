@@ -39,6 +39,8 @@
 #include <ff.h>
 #include <diskio.h>
 #include <stdio.h>
+#include <math.h>
+#include <string.h>
 
 void die (FRESULT rc) {
   printf("Failed with rc=%u.\n", rc);
@@ -48,8 +50,50 @@ void die (FRESULT rc) {
 FATFS Fatfs;		/* File system object */
 FIL Fil;		/* File object */
 BYTE Buff[128];		/* File read buffer */
-BYTE PixelBuf[3];
 
+// converts accel raw data to radians
+void accel_rawdata_to_radians(float accel_data[], float rads[]) {
+  rads[0] = atan(accel_data[0]/(sqrt(pow(accel_data[1], 2) + pow(accel_data[2], 2))));
+  rads[1] = atan(accel_data[1]/(sqrt(pow(accel_data[0], 2) + pow(accel_data[2], 2))));
+  rads[2] = atan(accel_data[2]/(sqrt(pow(accel_data[0], 2) + pow(accel_data[1], 2))));
+}
+
+// handles changing between different visualizations
+int change_mode(int *mode, int change) {
+  if (*mode == 2) {
+    if (change == 1) {
+      *mode = 0;
+    } else {
+      *mode += change;
+    }
+  } else if (*mode == 0) {
+    if (change == -1) {
+      *mode = 2;
+    } else {
+      *mode += change;
+    }
+  } else {
+    *mode += change;
+  }
+}
+
+int find_quadrant(float accel_rads[]) {
+  int x = accel_rads[0];
+  int y = accel_rads[1];
+  if (abs(x) > abs(y)) {
+    if (x > 0) {
+      return 2;
+    } else {
+      return 0;
+    }
+  } else {
+    if (y > 0) {
+      return 1;
+    } else {
+      return 3;
+    }
+  }
+}
 
 int main(void) { 
   char footer[20];
@@ -70,28 +114,79 @@ int main(void) {
   f3d_lcd_init();
   f3d_delay_init();
   f3d_rtc_init();
+  f3d_i2c1_init();
+  
+  f3d_nunchuk_init();
+  delay(10);
+  f3d_accel_init();
+  delay(10);
+
   f_mount(0, &Fatfs);		/* Register volume work area (never fails) */
-  rc = f_open(&Fil, "POKE1.BMP", FA_READ);
-  if (rc) {
-    die(rc);
-  } else {
-    int i;
-    int headerskip = 54;
-    for (i = 0;i < 80;) {
-      if (i == 0) {
-	rc = f_read(&Fil, Buff, headerskip, &br);	/* Read a chunk of file */
-	if (rc || !br) break;
-	i+=headerskip;
-      } else {
-	rc = f_read(&Fil, PixelBuf, sizeof PixelBuf, &br);	/* Read a chunk of file */
-	if (rc || !br) break;
-	uint32_t LCD_pixel = convert_pixel(PixelBuf);
-	printf("%x\n", LCD_pixel);
-	i+=3;
+  nunchuk_t nun_data;
+  int mode = 0;
+  // flag to keep track if button has been pressed already
+  int FLAG_btn_pressed = 0;
+  char *name = "POKE1.BMP";
+  // rc = f_open(&Fil, "POKE1.BMP", FA_READ);
+  while (1) {
+    int change;
+    f3d_nunchuk_read(&nun_data);
+    change = f3d_nunchuk_change_mode(&nun_data);
+    if (change) {
+      if (!FLAG_btn_pressed) {
+    	change_mode(&mode, change);
+    	FLAG_btn_pressed = 1;
       }
+    } else {
+      FLAG_btn_pressed = 0;
     }
+
+    switch(mode) {
+    case 0:
+      rc = f_open(&Fil, "POKE1.BMP", FA_READ);
+      printf("mode 1\n");
+      break;
+    case 1:
+      rc = f_open(&Fil, "POKE2.BMP", FA_READ);
+      printf("mode 2\n");
+      break;
+    case 2:
+      rc = f_open(&Fil, "POKE3.BMP", FA_READ);
+      printf("mode 3\n");
+      break;
+    }	
+
+    float accel_data[3];
+    float accel_rads[3];
+    f3d_accel_read(accel_data);    
+    accel_rawdata_to_radians(accel_data, accel_rads);
+    int direction = find_quadrant(accel_rads);
+    draw_pic(&Fil, direction, &br);
+    f_close(&Fil);
+    /* while(1) { */
+    /*   printf("In while loop"); */
+    /*   f3d_accel_read(accel_data);     */
+    /*   accel_rawdata_to_radians(accel_data, accel_rads); */
+    /*   int new_direction = find_quadrant(accel_rads); */
+    /*   if (new_direction != direction) { */
+    /* 	direction = new_direction; */
+    /* 	break; */
+    /*   } */
+    /*   f3d_nunchuk_read(&nun_data); */
+    /*   change = f3d_nunchuk_change_mode(&nun_data); */
+    /*   if (change) { */
+    /* 	if (!FLAG_btn_pressed) { */
+    /* 	  change_mode(&mode, change); */
+    /* 	  FLAG_btn_pressed = 1; */
+    /* 	} */
+    /*   } else { */
+    /* 	FLAG_btn_pressed = 0; */
+    /*   } */
+    /*   break; */
+    /* } */
   }
-  if (rc) die(rc);
+
+
   
 
   
@@ -145,7 +240,6 @@ int main(void) {
   /* rc = disk_ioctl(0,GET_SECTOR_COUNT,&retval); */
   /* printf("%d %d\n",rc,retval); */
 
-  while (1);
 }
 
 #ifdef USE_FULL_ASSERT
