@@ -129,13 +129,21 @@ int main(void) {
   char *name = "POKE1.BMP";
   // rc = f_open(&Fil, "POKE1.BMP", FA_READ);
   while (1) {
+    float accel_data[3];
+    float accel_rads[3];
+    f3d_accel_read(accel_data);    
+    accel_rawdata_to_radians(accel_data, accel_rads);
+    int direction = find_quadrant(accel_rads);
+    
     int change;
     f3d_nunchuk_read(&nun_data);
     change = f3d_nunchuk_change_mode(&nun_data);
+
     if (change) {
       if (!FLAG_btn_pressed) {
     	change_mode(&mode, change);
     	FLAG_btn_pressed = 1;
+	continue;
       }
     } else {
       FLAG_btn_pressed = 0;
@@ -156,13 +164,9 @@ int main(void) {
       break;
     }	
 
-    float accel_data[3];
-    float accel_rads[3];
-    f3d_accel_read(accel_data);    
-    accel_rawdata_to_radians(accel_data, accel_rads);
-    int direction = find_quadrant(accel_rads);
     draw_pic(&Fil, direction, &br);
     f_close(&Fil);
+
     /* while(1) { */
     /*   printf("In while loop"); */
     /*   f3d_accel_read(accel_data);     */
