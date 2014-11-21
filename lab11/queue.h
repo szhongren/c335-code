@@ -13,17 +13,10 @@
  * Doc URL: 
  * Keywords: 
  * Compatibility: 
- * 
- */
-
-/* Commentary: 
- * 
- * 
- * 
  */
 
 /* Change Log:
- * 
+ * 11/14/14 Erin Leonhard (eeleonha) and Zhongren Shao (shaoz)
  * 
  */
 
