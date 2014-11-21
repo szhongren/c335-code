@@ -36,8 +36,9 @@
 #include <f3d_nunchuk.h>
 #include <f3d_rtc.h>
 #include <f3d_systick.h>
+#include <f3d_timer2.h>
+#include <f3d_dac.h>
 #include <ff.h>
-#include <diskio.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,7 +101,13 @@ int main(void) {
   f3d_dac_init();
   f3d_delay_init();
   f3d_rtc_init();
-  f3d_systick_init();
+  f3d_systick_init(100);
+  f3d_lcd_init();
+
+  /* while(1) { */
+  /*   f3d_lcd_fillScreen(WHITE); */
+  /*   f3d_lcd_fillScreen(BLUE); */
+  /* } */
 
   printf("Reset\n");
   
@@ -143,7 +150,7 @@ int main(void) {
     while(1){
       readckhd(&fid, &hd, 0);
       if (hd.ckID == 'atad')
-	break;
+  	break;
       f_lseek(&fid, hd.cksize);
     }
     
@@ -159,24 +166,24 @@ int main(void) {
     while (hd.cksize) {
       int next = hd.cksize > AUDIOBUFSIZE/2 ? AUDIOBUFSIZE/2 : hd.cksize;
       if (audioplayerHalf) {
-	if (next < AUDIOBUFSIZE/2)
-	  bzero(Audiobuf, AUDIOBUFSIZE/2);
-	f_read(&fid, Audiobuf, next, &ret);
-	hd.cksize -= ret;
-	audioplayerHalf = 0;
+  	if (next < AUDIOBUFSIZE/2)
+  	  bzero(Audiobuf, AUDIOBUFSIZE/2);
+  	f_read(&fid, Audiobuf, next, &ret);
+  	hd.cksize -= ret;
+  	audioplayerHalf = 0;
       }
       if (audioplayerWhole) {
-	if (next < AUDIOBUFSIZE/2)
-	  bzero(&Audiobuf[AUDIOBUFSIZE/2], AUDIOBUFSIZE/2);
-	f_read(&fid, &Audiobuf[AUDIOBUFSIZE/2], next, &ret);
-	hd.cksize -= ret;
-	audioplayerWhole = 0;
+  	if (next < AUDIOBUFSIZE/2)
+  	  bzero(&Audiobuf[AUDIOBUFSIZE/2], AUDIOBUFSIZE/2);
+  	f_read(&fid, &Audiobuf[AUDIOBUFSIZE/2], next, &ret);
+  	hd.cksize -= ret;
+  	audioplayerWhole = 0;
       }
     }
     audioplayerStop();
   }
   
-  printf("\nClose the file.\n"); 
+  printf("\nClose the file.\n");
   rc = f_close(&fid);
   
   if (rc) die(rc);

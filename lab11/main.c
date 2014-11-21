@@ -23,13 +23,6 @@
 
 extern int flag;
 
-int next_led(int curr_led) {
-  if (curr_led == 15) 
-    return 8;
-  else
-    return curr_led + 1;
-}
-
 int main(void) {
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);

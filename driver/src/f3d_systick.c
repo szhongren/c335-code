@@ -49,6 +49,13 @@ void systick_delay(int time) {
     while (TimingDelay != 0);
 }
 
+int next_led(int curr_led) {
+  if (curr_led == 15) 
+    return 8;
+  else
+    return curr_led + 1;
+}
+
 void SysTick_Handler(void) {
   static int led = 8;
   if (TimingDelay != 0x00)
