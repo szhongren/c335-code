@@ -1,28 +1,23 @@
 /* main.c --- 
  * 
  * Filename: main.c
- * Description: 
- * Author: 
- * Maintainer: 
+ *
  * Created: Thu Jan 10 11:23:43 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
- * Keywords: 
- * Compatibility: 
- * 
+ * Last-Updated: Erin Leonhard (eeleonha) &
+ *           By: Zhongren Shao (shaoz)
+ *     Update #: 1
  */
 
 /* Commentary: 
  * 
- * 
- * 
+ * The below definitions complete C335 Lab 12.
  */
 
 /* Change log:
- * 
- * 
+ *
+ *
  */
+
 /* Code: */
 
 #include <stm32f30x.h>  // Pull in include files for F30x standard drivers 
@@ -81,6 +76,33 @@ void readckhd(FIL *fid, struct ckhd *hd, uint32_t ckID) {
 void die (FRESULT rc) {
   printf("Failed with rc=%u.\n", rc);
   while (1);
+}
+
+char[][] WAV_FILES;
+int NUM_WAV_FILES = 3;
+
+// handles switching WAV files
+int change_file(int *file, int change) {
+  if (*file == NUM_WAV_FILES) {
+    if (change == 1) {
+      *file = 0;
+    } else {
+      *file += change;
+    }
+  } else if (*file == 0) {
+    if (change == -1) {
+      *file = NUM_WAV_FILES;
+    } else {
+      *file += change;
+    }
+  } else {
+    *file += change;
+  }
+}
+
+// read all WAV files from SD card
+void read_wav_from_sd(void) {
+  
 }
 
 int main(void) { 

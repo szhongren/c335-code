@@ -5,16 +5,15 @@
  * Author: Bryce Himebaugh
  * Maintainer: 
  * Created: Mon Nov 18 14:09:52 2013
- * Last-Updated: 
- *           By: 
- *     Update #: 0
+ * Last-Updated: Erin Leonhard (eeleonha)
+ *           By: Zhongren Shao (shaoz)
+ *     Update #: 1
  * Keywords: 
  * Compatibility: 
  * 
  */
 
 /* Commentary: 
- * 
  * 
  * 
  */
