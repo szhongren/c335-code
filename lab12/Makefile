@@ -17,6 +17,8 @@ OBJS=  $(STARTUP) 	main.o \
 			f3d_delay.o \
 			f3d_timer2.o \
 			f3d_rtc.o \
+			f3d_i2c.o \
+			f3d_nunchuk.o \
 			queue.o \
 			glcdfont.o \
 			mmcbb.o \

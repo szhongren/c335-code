@@ -78,8 +78,44 @@ void die (FRESULT rc) {
   while (1);
 }
 
-char[][] WAV_FILES;
-int NUM_WAV_FILES = 3;
+char *WAV_FILES[] = {"thermo.wav", "rainy.wav", "river.wav", "fire.wav", "wind.wav"};
+int NUM_WAV_FILES = 5;
+
+// this will draw the menu on the LCD screen.
+void draw_lcd_menu(void){
+  f3d_lcd_fillScreen(BLACK); // background
+  int TOP = 5;
+  int VERT_SPACING = 8;
+  int y_posn = 5;
+  int i = 0;
+  for (i = 0; i < NUM_WAV_FILES; i++) {
+    uint8_t x_posn = VERT_SPACING * i + TOP;
+    f3d_lcd_drawString(x_posn, y_posn, WAV_FILES[i], WHITE, BLACK); // file names
+  }
+}
+
+// indicate which file is currently selected with brackets
+void highlight_selected_on_menu(int *file) {
+  int TOP = 5;
+  int VERT_SPACING = 8;
+  int y_posn_1 = 1;
+  int y_posn_2 = 21;
+  int i = 0;
+  // erase all old highlighting and draw new highlighting for current selection
+  for (i = 0; i < NUM_WAV_FILES; i++) {
+    uint8_t x_posn = VERT_SPACING * i + TOP;
+    if (i != *file ) {
+      // erase old highlighting
+      f3d_lcd_drawChar(x_posn, y_posn_1, '[', BLACK, BLACK); // first bracket
+      f3d_lcd_drawChar(x_posn, y_posn_2, ']', BLACK, BLACK); // second bracket
+    }
+    else {
+      // draw new highlighting
+      f3d_lcd_drawChar(x_posn, y_posn_1, '[', CYAN, BLACK); // first bracket
+      f3d_lcd_drawChar(x_posn, y_posn_2, ']', CYAN, BLACK); // second bracket
+    }
+  }
+}
 
 // handles switching WAV files
 int change_file(int *file, int change) {
@@ -98,68 +134,13 @@ int change_file(int *file, int change) {
   } else {
     *file += change;
   }
+  // highlight newly selected file
+  highlight_selected_on_menu(file);
 }
 
-// read all WAV files from SD card and load into array
-void read_wav_from_sd(void) {
-  // In theory, this would pull all the .wav files from SD
-  // and put in WAV_FILES to be written to LCD menu.
-  // But it is currently not working.
-  int i = 0;
-  NUM_WAV_FILES = 0;
-  // while there's another .wav file left
-  // WAV_FILES[i] = filename;
-  // i++;
-  // NUM_WAV_FILES++;
-}
-
-void draw_lcd_menu(void){
-  // this will (hopefully) eventually draw the menu on the LCD screen.
-  f3d_lcd_fillScreen(BLACK); // background
-  int TOP = 5;
-  int VERT_SPACING = 8;
-  int y_posn = 5;
-  int i = 0;
-  for (i = 0; i < NUM_WAV_FILES; i++) {
-    uint8_t x_posn = VERT_SPACING * i + TOP;
-    f3d_lcd_drawString(x_posn, y_posn, WAV_FILES[i], WHITE, BLACK); // file names
-  }
-}
-
-int main(void) { 
-
-  FRESULT rc;			/* Result code */
-  DIR dir;			/* Directory object */
-  FILINFO fno;			/* File information object */
-  UINT bw, br;
-  unsigned int retval;
-  int bytesread;
-
-  setvbuf(stdin, NULL, _IONBF, 0);
-  setvbuf(stdout, NULL, _IONBF, 0);
-  setvbuf(stderr, NULL, _IONBF, 0);
-
-  f3d_uart_init();
-  f3d_timer2_init();
-  f3d_dac_init();
-  f3d_delay_init();
-  f3d_rtc_init();
-  f3d_systick_init(100);
-  f3d_lcd_init();
-
-  /* while(1) { */
-  /*   f3d_lcd_fillScreen(WHITE); */
-  /*   f3d_lcd_fillScreen(BLUE); */
-  /* } */
-
-  printf("Reset\n");
-  
-  f_mount(0, &Fatfs);/* Register volume work area */
-
-  printf("\nOpen thermo.wav\n");
-  rc = f_open(&fid, "thermo.wav", FA_READ);
-  
-  if (!rc) {
+// plays the selected audio file
+int play_audio_from_file(int *rc) {
+  if (!*rc) {
     struct ckhd hd;
     uint32_t  waveid;
     struct fmtck fck;
@@ -199,9 +180,8 @@ int main(void) {
     
     printf("Samples %d\n", hd.cksize);
     
-    // Play it !
-    
-    //      audioplayerInit(fck.nSamplesPerSec);
+    // Play it!
+    //audioplayerInit(fck.nSamplesPerSec);
     
     f_read(&fid, Audiobuf, AUDIOBUFSIZE, &ret);
     hd.cksize -= ret;
@@ -225,12 +205,87 @@ int main(void) {
     }
     audioplayerStop();
   }
+}
+
+int main(void) { 
+
+  FRESULT rc;			/* Result code */
+  DIR dir;			/* Directory object */
+  FILINFO fno;			/* File information object */
+  UINT bw, br;
+  unsigned int retval;
+  int bytesread;
+
+  setvbuf(stdin, NULL, _IONBF, 0);
+  setvbuf(stdout, NULL, _IONBF, 0);
+  setvbuf(stderr, NULL, _IONBF, 0);
+
+  f3d_uart_init();
+  f3d_timer2_init();
+  f3d_dac_init();
+  f3d_delay_init();
+  f3d_rtc_init();
+  f3d_systick_init(100);
+  f3d_lcd_init();
+  delay(10);
+  f3d_nunchuk_init();
+
+  /* while(1) { */
+  /*   f3d_lcd_fillScreen(WHITE); */
+  /*   f3d_lcd_fillScreen(BLUE); */
+  /* } */
+
+  //printf("Reset\n");
+  f_mount(0, &Fatfs);/* Register volume work area */
+  int file = 0;
+  int change;
+  int FLAG_CHNG_STATE = 0;
+  draw_lcd_menu();
+  highlight_selected_on_menu(&file);
+  nunchuk_t nun_data;
   
-  printf("\nClose the file.\n");
-  rc = f_close(&fid);
-  
-  if (rc) die(rc);
-  while (1);
+  while (1) {
+    // check for request to change files from nunchuk
+    f3d_nunchuk_read(&nun_data);
+    change = f3d_nunchuk_change_mode(&nun_data);
+    if (change) {
+      if (!FLAG_CHNG_STATE) {
+	change_file(&file, change);
+	FLAG_CHNG_STATE = 1;
+      } 
+    } else { 
+      FLAG_CHNG_STATE = 0;
+    }
+
+    printf("\nOpen %s\n", WAV_FILES[file]);
+
+    switch(file) {
+    case 0:
+      rc = f_open(&fid, "thermo.wav", FA_READ);
+      break;
+    case 1:
+      rc = f_open(&fid, "rainy.wav", FA_READ);
+      break;
+    case 2:
+      rc = f_open(&fid, "river.wav", FA_READ);
+      break;
+    case 3:
+      rc = f_open(&fid, "fire.wav", FA_READ);
+      break;
+    case 4:
+      rc = f_open(&fid, "wind.wav", FA_READ);
+      break;
+    }
+    
+    // play selected audio
+    //play_audio_from_file(&rc);
+    
+    // close file
+    printf("\nClose the file.\n");
+    rc = f_close(&fid);
+    
+    if (rc) die(rc);
+  }
 }
 
 #ifdef USE_FULL_ASSERT
