@@ -100,9 +100,30 @@ int change_file(int *file, int change) {
   }
 }
 
-// read all WAV files from SD card
+// read all WAV files from SD card and load into array
 void read_wav_from_sd(void) {
-  
+  // In theory, this would pull all the .wav files from SD
+  // and put in WAV_FILES to be written to LCD menu.
+  // But it is currently not working.
+  int i = 0;
+  NUM_WAV_FILES = 0;
+  // while there's another .wav file left
+  // WAV_FILES[i] = filename;
+  // i++;
+  // NUM_WAV_FILES++;
+}
+
+void draw_lcd_menu(void){
+  // this will (hopefully) eventually draw the menu on the LCD screen.
+  f3d_lcd_fillScreen(BLACK); // background
+  int TOP = 5;
+  int VERT_SPACING = 8;
+  int y_posn = 5;
+  int i = 0;
+  for (i = 0; i < NUM_WAV_FILES; i++) {
+    uint8_t x_posn = VERT_SPACING * i + TOP;
+    f3d_lcd_drawString(x_posn, y_posn, WAV_FILES[i], WHITE, BLACK); // file names
+  }
 }
 
 int main(void) { 
