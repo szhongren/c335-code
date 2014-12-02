@@ -31,10 +31,12 @@
 #include <f3d_systick.h>
 #include <f3d_led.h> 
 #include <f3d_usr_btn.h>
+#include <f3d_nunchuk.h>
 #include <queue.h>
 
 volatile int systick_flag = 0;
-volatile int flag = 0; 
+volatile int flag = 0;
+volatile int nunchuk_flag = 0;
 
 extern queue_t txbuf, rxbuf;
 
@@ -67,5 +69,9 @@ void SysTick_Handler(void) {
   f3d_led_off(led);
   led = next_led(led);  
   f3d_led_on(led);
+
+  nunchuk_t nun_data;
+  f3d_nunchuk_read(&nun_data);
+  nunchuk_flag = f3d_nunchuk_change_mode(&nun_data);
 }
 /* f3d_systick.c ends here */
