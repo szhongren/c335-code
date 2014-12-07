@@ -164,21 +164,34 @@ int main(void) {
   f3d_i2c1_init();
   f3d_nunchuk_init();
   f3d_systick_init(150);
-
+  
   extern int nunchuk_flag;
-  Dude player1 = makeNewPlayer(127,80,LEFT);
-  Dude player2 = makeNewPlayer(127,100,RIGHT);
-
+  Dude player1 = makeNewPlayer(1,1,LEFT);
+  Dude player2 = makeNewPlayer(1,0,RIGHT);
+  Level lvl1;
+  int i = 0;
+  for (i = 0; i < 25; i++) {
+    lvl1.cols[i] = 1;
+  }
   f_mount(0, &Fatfs);
   f3d_lcd_fillScreen(BLACK);
   int x, y;
-  for (x = 4; x < 120; x += 12) {
-   for (y = 2; y < 156; y += 12) {
-    drawBrick(x, y, GREEN, BLACK);
-   }
-  }
+
+  drawScreen(lvl1, player1);
+  drawBlock(0, 1, RED, BLACK);
+  drawDoor(12, 1, BLUE, BLACK);
   drawDude(player1, WHITE, RED);
-  drawDude(player2, WHITE, BLUE);
+  /* for (x = 0; x < 12; x++) { */
+  /*  for (y = 0; y < 10; y++) { */
+  /*    if (y > 5) */
+  /*      drawBlock(x, y, RED, BLUE); */
+  /*    else */
+  /*      drawBrick(x, y, WHITE, BLACK); */
+  /*  } */
+  /*  drawDoor(12, 1, CYAN, RED); */
+  /* } */
+  /* drawDude(player1, WHITE, RED); */
+  /* drawDude(player2, WHITE, BLUE); */
   
 }
 

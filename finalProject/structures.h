@@ -19,4 +19,13 @@ typedef struct dude {
   int direction;
 } Dude;
 
+typedef struct level {
+  int startPos;
+  int blocks[10];
+  int numBlocks;
+  int doorPos;
+  int length;
+  int cols[25];
+} Level;
+
 Dude makeNewPlayer(int x, int y, int direction);
