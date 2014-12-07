@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "structures.h"
 
 #define TIMER 20000
 #define AUDIOBUFSIZE 128
@@ -165,6 +166,8 @@ int main(void) {
   f3d_systick_init(150);
 
   extern int nunchuk_flag;
+  Dude player1 = makeNewPlayer(127,80,LEFT);
+  Dude player2 = makeNewPlayer(127,100,RIGHT);
 
   f_mount(0, &Fatfs);
   f3d_lcd_fillScreen(BLACK);
@@ -174,7 +177,8 @@ int main(void) {
     drawBrick(x, y, GREEN, BLACK);
    }
   }
-  drawDude(2, 2, 0, BLUE, RED);
+  drawDude(player1, WHITE, RED);
+  drawDude(player2, WHITE, BLUE);
   
 }
 

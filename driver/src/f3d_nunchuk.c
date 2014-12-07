@@ -106,12 +106,22 @@ int f3d_j_left(nunchuk_t *nun_data) {
   return nun_data->jx < NUN_X_MID - 70;
 }
 
+// has the joystick been moved up
+int f3d_j_up(nunchuk_t *nun_data) {
+  return nun_data->jy > NUN_Y_MID + 70;
+}
+
+// has the joystick been moved down
+int f3d_j_down(nunchuk_t *nun_data) {
+  return nun_data->jy < NUN_Y_MID - 70;
+}
+
 // checks for the presence of certain variables with the
 // nunchuk to know if the mode should change
 int f3d_nunchuk_change_mode(nunchuk_t *nun_data) {
-  if (f3d_c_pressed(nun_data) || f3d_j_right(nun_data))
+  if (f3d_c_pressed(nun_data) || f3d_j_right(nun_data) || f3d_j_down(nun_data))
     return 1;
-  else if (f3d_z_pressed(nun_data) || f3d_j_left(nun_data))
+  else if (f3d_z_pressed(nun_data) || f3d_j_left(nun_data) || f3d_j_up(nun_data))
     return -1;
   else
     return 0;

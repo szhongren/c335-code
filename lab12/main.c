@@ -50,7 +50,7 @@ FIL fid;	/* File object */
 BYTE Buff[512];	/* File read buffer */
 int ret;
 
-char *WAV_FILES[] = {"thermo.wav", "cat.wav", "cricket.wav", "goat.wav", "kitten.wav"};
+char *WAV_FILES[] = {"thermo.wav", "cat.wav", "ahem.wav", "goat.wav", "peeoop.wav"};
 int NUM_WAV_FILES = 5;
 
 struct ckhd {
@@ -228,8 +228,9 @@ int main(void) {
   f3d_led_init();
   f3d_i2c1_init();
   f3d_nunchuk_init();
-  f3d_systick_init(100);
+  f3d_systick_init(150);
 
+  extern int nunchuk_flag;
 
   f_mount(0, &Fatfs);
   int file = 0;
@@ -238,19 +239,20 @@ int main(void) {
   draw_lcd_menu();
   highlight_selected_on_menu(&file);
   //nunchuk_t nun_data;
-  
+
   while (1) {
     // check for request to change files from nunchuk
     //f3d_nunchuk_read(&nun_data);
     //change = f3d_nunchuk_change_mode(&nun_data);
     if (nunchuk_flag) {
-      if (!FLAG_CHNG_STATE) {
+      //if (!FLAG_CHNG_STATE) {
 	change_file(&file, nunchuk_flag);
-	FLAG_CHNG_STATE = 1;
-      } 
-    } else { 
-      FLAG_CHNG_STATE = 0;
     }
+	//FLAG_CHNG_STATE = 1;
+	// } 
+	//} else { 
+	//FLAG_CHNG_STATE = 0;
+	//}
 
     // printf("\nOpen %s\n", WAV_FILES[file]);
     // rc = f_open(&fid, WAV_FILES[file], FA_READ);
@@ -263,13 +265,13 @@ int main(void) {
       rc = f_open(&fid, "cat.wav", FA_READ);
       break;
     case 2:
-      rc = f_open(&fid, "cricket.wav", FA_READ);
+      rc = f_open(&fid, "ahem.wav", FA_READ);
       break;
     case 3:
       rc = f_open(&fid, "goat.wav", FA_READ);
       break;
     case 4:
-      rc = f_open(&fid, "kitten.wav", FA_READ);
+      rc = f_open(&fid, "peeoop.wav", FA_READ);
       break;
     }
 

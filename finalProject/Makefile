@@ -24,6 +24,8 @@ OBJS=  $(STARTUP) 	main.o \
 			mmcbb.o \
 			ff.o \
 			drawUtils.o \
+			structures.o \
+			movementUtils.o \
 			stm32f30x_rcc.o \
 			stm32f30x_gpio.o \
 			stm32f30x_usart.o \

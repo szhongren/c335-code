@@ -9,6 +9,7 @@
  */
 
 #include <f3d_lcd_sd.h>
+#include "structures.h"
 
 // draw brick
 void drawBrick(int x, int y, uint16_t color, uint16_t bgColor) {
@@ -31,7 +32,11 @@ void drawBrick(int x, int y, uint16_t color, uint16_t bgColor) {
 
 
 // draw dude
-void drawDude(int x, int y, int direction, uint16_t color, uint16_t capColor) {
+void drawDude(Dude dude,  uint16_t color, uint16_t capColor) {
+  int x = dude.x;
+  int y = dude.y;
+  int direction = dude.direction;
+  
   static short leftDude[24] = {0x0e0, 0x0f0, 0x7f0, 0x7f0, 0x0f0, 0x1f8, 
 			       0x3fc, 0x3fc, 0x1f8, 0x0f0, 0x060, 0x060, 
 			       0x7fe, 0x7fe, 0x060, 0x060, 0x060, 0x060, 
@@ -44,13 +49,23 @@ void drawDude(int x, int y, int direction, uint16_t color, uint16_t capColor) {
   for (r = 0; r < 12; r++) {
     int c = 0;
     for (c = 0; c < 24; c++) {
-      if ((rightDude[c] >> r) & 0x1) {
-	if (c < 4) {
-	  f3d_lcd_drawPixel(x + c, y + r, capColor);
-	} else {
-	  f3d_lcd_drawPixel(x + c, y + r, color);
+      if (direction == RIGHT) {
+	if ((leftDude[c] >> r) & 0x1) {
+	  if (c < 4) {
+	    f3d_lcd_drawPixel(x - c, y + r, capColor);
+	  } else {
+	    f3d_lcd_drawPixel(x - c, y + r, color);
+	  }
 	}
-      }  
+      } else {
+	if ((rightDude[c] >> r) & 0x1) {
+	  if (c < 4) {
+	    f3d_lcd_drawPixel(x - c, y + r, capColor);
+	  } else {
+	    f3d_lcd_drawPixel(x - c, y + r, color);
+	  }
+	}
+      }
     }  
   }
 }
