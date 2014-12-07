@@ -1,0 +1,16 @@
+/* 
+ * 
+ * Filename: dude.c
+ *
+ * Part of: C335 Final Project
+ * Created: 12.7.14
+ * Last-Updated: Erin Leonhard (eeleonha) &
+ *           By: Zhongren Shao (shaoz)
+ */
+
+/* Code: */
+
+typedef struct dude {
+  int x;
+  int y;
+} Dude;

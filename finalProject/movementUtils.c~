@@ -1,0 +1,37 @@
+/*
+ * movementUtils.c
+ *
+ * Part of: C335 Final Project
+ * Created: 12.7.14 Erin Leonhard (eeleonha) and Zhongren Shao (shaoz)
+ * Last Updated: 12.7.14
+ *
+ * The below definitions handle movement through the game.
+ */
+
+/*          _ _ _ _ _ _ _ _
+ * (127,0) |               | (127,159)
+ *         |               |
+ *         |               |
+ *         |               |
+ *   (0,0) |_ _ _ _ _ _ _ _| (0,159)
+ */
+
+#define BLOCKWIDTH 12
+#define BLOCKHEIGHT 12
+#define DUDEHEIGHT 24
+
+void moveDudeUp(int x, int y) {
+  if (
+}
+
+void moveDudeDown() {
+
+}
+
+void moveDudeRight() {
+
+}
+
+void moveDudeLeft() {
+
+}
