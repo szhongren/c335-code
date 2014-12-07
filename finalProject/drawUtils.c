@@ -20,10 +20,10 @@ void drawBrick(int x, int y, uint16_t color, uint16_t bgColor) {
     // 0x000
     int c = 0;
     for (c = 0; c < 12; c++) {
-      if ((brick[c] >> r) & 0x1)
-	f3d_lcd_drawPixel(x + c, y + r, color);
+      if ((brick[r] >> c) & 0x1)
+	f3d_lcd_drawPixel(y * 12 + 4 + r, x * 12 + 2 + c, color);
       else
-	f3d_lcd_drawPixel(x + c, y + r, bgColor);
+	f3d_lcd_drawPixel(y * 12 + 4 + r, x * 12 + 2 + c, bgColor);
     }
   }
 }
@@ -46,23 +46,23 @@ void drawDude(Dude dude,  uint16_t color, uint16_t capColor) {
 				0x7fe, 0x7fe, 0x060, 0x060, 0x060, 0x060, 
 				0x060, 0x0f0, 0x198, 0x30c, 0x606, 0xc03};
   int r = 0;
-  for (r = 0; r < 12; r++) {
+  for (r = 0; r < 24; r++) {
     int c = 0;
-    for (c = 0; c < 24; c++) {
+    for (c = 0; c < 12; c++) {
       if (direction == RIGHT) {
-	if ((leftDude[c] >> r) & 0x1) {
-	  if (c < 4) {
-	    f3d_lcd_drawPixel(x - c, y + r, capColor);
+	if ((leftDude[r] >> c) & 0x1) {
+	  if (r < 4) {
+	    f3d_lcd_drawPixel(y * 12 + 28 - r, x * 12 + 2 + c, capColor);
 	  } else {
-	    f3d_lcd_drawPixel(x - c, y + r, color);
+	    f3d_lcd_drawPixel(y * 12 + 28 - r, x * 12 + 2 + c, color);
 	  }
 	}
       } else {
-	if ((rightDude[c] >> r) & 0x1) {
-	  if (c < 4) {
-	    f3d_lcd_drawPixel(x - c, y + r, capColor);
+	if ((rightDude[r] >> c) & 0x1) {
+	  if (r < 4) {
+	    f3d_lcd_drawPixel(y * 12 + 28 - r, x * 12 + 2 + c, capColor);
 	  } else {
-	    f3d_lcd_drawPixel(x - c, y + r, color);
+	    f3d_lcd_drawPixel(y * 12 + 28 - r, x * 12 + 2 + c, color);
 	  }
 	}
       }

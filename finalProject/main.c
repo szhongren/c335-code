@@ -166,14 +166,14 @@ int main(void) {
   f3d_systick_init(150);
 
   extern int nunchuk_flag;
-  Dude player1 = makeNewPlayer(127,80,LEFT);
-  Dude player2 = makeNewPlayer(127,100,RIGHT);
+  Dude player1 = makeNewPlayer(0,0,LEFT);
+  Dude player2 = makeNewPlayer(1,0,RIGHT);
 
   f_mount(0, &Fatfs);
   f3d_lcd_fillScreen(BLACK);
   int x, y;
-  for (x = 4; x < 120; x += 12) {
-   for (y = 2; y < 156; y += 12) {
+  for (x = 0; x < 13; x++) {
+   for (y = 0; y < 10; y++) {
     drawBrick(x, y, GREEN, BLACK);
    }
   }
