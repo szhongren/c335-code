@@ -171,7 +171,7 @@ int gameStep(Level lvl, Dude *dude, State *state) {
 
     if (action_flag) {
       if (!buttons_flag) {
-	// check what action_flag is, 1 for pickup, -1 for drop, then of course check if the action is valid
+	// check what action_flag is, 1 for pickup, -1 for drop, then check if the action is valid
 	buttons_flag = 1;
       }
     } else {
@@ -211,7 +211,7 @@ int main(void) {
   
   extern int nunchuk_flag;
   int FLAG_MOVE = 0;
-
+ 
   Dude player1 = makeNewPlayer(1,1,RIGHT);
   Level lvl1 = initLevel();
   State start = defaultState();

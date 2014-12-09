@@ -40,6 +40,11 @@ typedef struct state {
   char screen[13][10]; // stores the values of each 'tile onscreen as a char in its xy coord
 } State;
 
+typedef struct screenChange {
+  char changes[13][10];
+} Changes;
+  
+
 Dude makeNewPlayer(int x, int y, int direction);
 State defaultState();
 Level initLevel();
