@@ -98,12 +98,12 @@ int f3d_z_pressed(nunchuk_t *nun_data) {
 
 // has the joystick been moved right
 int f3d_j_right(nunchuk_t *nun_data) {
-  return nun_data->jx > NUN_X_MID + 70;
+  return nun_data->jx > NUN_X_MID + 30;
 }
 
 // has the joystick been moved left
 int f3d_j_left(nunchuk_t *nun_data) {
-  return nun_data->jx < NUN_X_MID - 70;
+  return nun_data->jx < NUN_X_MID - 30;
 }
 
 // has the joystick been moved up

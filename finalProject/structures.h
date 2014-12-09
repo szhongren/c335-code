@@ -17,15 +17,29 @@ typedef struct dude {
   int x;
   int y;
   int direction;
+  int screenPos;
 } Dude;
 
 typedef struct level {
   int startPos;
+  int doorPos;
   int blocks[10];
   int numBlocks;
-  int doorPos;
-  int length;
   int cols[25];
+  int numCols;
 } Level;
 
+typedef struct state {
+  int left;
+  short bgColor;
+  short brickColor;
+  short blockColor;
+  short doorColor;
+  short dudeColor;
+  short capColor;
+  char screen[13][10]; // stores the values of each 'tile onscreen as a char in its xy coord
+} State;
+
 Dude makeNewPlayer(int x, int y, int direction);
+State defaultState();
+Level initLevel();

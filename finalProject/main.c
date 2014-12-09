@@ -141,6 +141,50 @@ int play_audio_from_file(FRESULT *rc) {
   }
 }
 
+void win() {
+  f3d_lcd_fillScreen(GREEN);
+  f3d_lcd_drawCircle(20, 64, 80, YELLOW, 1);
+}
+
+// this 'advances' the game forward a step, so we can put everything we need to check for each step of the game in here. already in a while loop that exits when dude reaches door
+int gameStep(Level lvl, Dude *dude, State *state) {
+  extern int move_flag;
+  extern int action_flag;
+  static int joystick_flag = 0;
+  static int buttons_flag = 0;
+
+  if (dude->x == lvl.doorPos) {
+    win();
+    return 0;
+  } else { 
+    if (move_flag) {
+      if (!joystick_flag) {
+	eraseOldDude(*dude);
+	dude->x = dude->x + move_flag;
+	dude->y = getYPosnOfBlock(lvl, dude->x + state->left);
+	drawDude(*dude, state->dudeColor, state->capColor);
+	joystick_flag = 1;
+      }
+    } else {
+      joystick_flag = 0;
+    }
+
+    if (action_flag) {
+      if (!buttons_flag) {
+	// check what action_flag is, 1 for pickup, -1 for drop, then of course check if the action is valid
+	buttons_flag = 1;
+      }
+    } else {
+      action_flag = 0;
+    }
+    
+    State old = *state;
+    updateScreen(lvl, *dude, old, *state);
+
+    return 1;
+  }
+}
+
 int main(void) {
 
   FRESULT rc;	/* Result code */
@@ -166,33 +210,36 @@ int main(void) {
   f3d_systick_init(150);
   
   extern int nunchuk_flag;
-  Dude player1 = makeNewPlayer(1,1,LEFT);
-  Dude player2 = makeNewPlayer(1,0,RIGHT);
-  Level lvl1;
-  int i = 0;
-  for (i = 0; i < 25; i++) {
-    lvl1.cols[i] = 1;
-  }
+  int FLAG_MOVE = 0;
+
+  Dude player1 = makeNewPlayer(1,1,RIGHT);
+  Level lvl1 = initLevel();
+  State start = defaultState();
+
   f_mount(0, &Fatfs);
   f3d_lcd_fillScreen(BLACK);
-  int x, y;
+  initGraphics(lvl1, player1, start); // the old drawScreen
 
-  drawScreen(lvl1, player1);
-  drawBlock(0, 1, RED, BLACK);
-  drawDoor(12, 1, BLUE, BLACK);
-  drawDude(player1, WHITE, RED);
-  /* for (x = 0; x < 12; x++) { */
-  /*  for (y = 0; y < 10; y++) { */
-  /*    if (y > 5) */
-  /*      drawBlock(x, y, RED, BLUE); */
-  /*    else */
-  /*      drawBrick(x, y, WHITE, BLACK); */
-  /*  } */
-  /*  drawDoor(12, 1, CYAN, RED); */
-  /* } */
-  /* drawDude(player1, WHITE, RED); */
-  /* drawDude(player2, WHITE, BLUE); */
+  while (gameStep(lvl1, &player1, &start));
   
+  f3d_systick_init(10); // shows when you end the loop by making lights slower
+
+  /* while (player1.x != lvl1.doorPos) { */
+  /*   /\* f3d_nunchuk_read(&nun_data); *\/ */
+  /*   /\* change = movePlayer(&nun_data); *\/ */
+  /*   if (nunchuk_flag) { */
+  /*     if (!FLAG_MOVE) { */
+  /* 	eraseOldDude(player1); */
+  /* 	player1.x = player1.x + nunchuk_flag; */
+  /* 	player1.y = getYPosnOfBlock(lvl1, player1.x + start.left); */
+  /* 	drawDude(player1, start.dudeColor, start.capColor); */
+  /* 	FLAG_MOVE = 1; */
+  /*     } */
+  /*   } else { */
+  /*     FLAG_MOVE = 0; */
+  /*   } */
+  /* } */
+
 }
 
 #ifdef USE_FULL_ASSERT

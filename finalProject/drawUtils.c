@@ -103,7 +103,23 @@ void drawDude(Dude dude, uint16_t color, uint16_t capColor) {
   }
 }
 
-void drawScreen(Level lvl, Dude dude) {
+int count1s(int x) {
+  int i = 0;
+  int y = 0;
+  
+  for (i = 0; i < 10; i++) {
+    if (x == 0) {
+      break;
+    } else {
+      y++;
+      x = x >> 1;
+    }
+  }
+  return y;
+}
+
+// drawScreen
+void initGraphics(Level lvl, Dude dude, State state) {
   int x = dude.x;
   int direction = dude.direction;
 
@@ -111,11 +127,71 @@ void drawScreen(Level lvl, Dude dude) {
   for (i = 0; i < 13; i++) {
     int j = 0;
     for (j = 0; j < 10; j++) {
-      if ((lvl.cols[i] >> j) & 0x1) {
-	drawBrick(i, j, GREEN, BLACK);
+      if ((lvl.cols[state.left + i] >> j) & 0x1) {
+	drawBrick(i, j, state.brickColor, state.bgColor)
       } else
 	break;
       // check to see if we hit a 0, if so just continue
     }
   }
+
+  for (i = 0; i < lvl.numBlocks; i++) {
+    int blockX = lvl.blocks[i];
+    int numBricks = count1s(lvl.cols[blockX]);
+    int stackSize = getYPosnOfBlock(lvl, blockX) - numBricks;
+    if (blockX >= state.left && blockX < state.left + 13) {
+      int j;
+      for  (j = 0; j < stackSize; j++) {
+	drawBlock(blockX - state.left, numBricks + j, state.blockColor, state.bgColor);
+      }
+    }
+  }
+
+  int doorX = lvl.doorPos;
+  if (doorX >= state.left && doorX < state.left + 13)
+    drawDoor(doorX - state.left, getYPosnOfBlock(lvl, doorX), state.doorColor, state.bgColor);
+
+  if (state.left == 0 || state.left == lvl.numCols - 13)
+    drawDude(dude, state.dudeColor, state.capColor);
+}
+
+//use this to update the screen at the end of every gameStep call
+void updateScreen(Level lvl, Dude dude, State old, State new) {
+  static char NOTHING = 0, BRICK = 1, BLOCK = 2, DOOR = 3, DUDE = 4;
+  // using this to update the screen
+}
+
+
+// eraseOldDude
+void eraseOldDude(Dude player) {
+  drawDude(player, BLACK, BLACK);
+}
+
+// clearBlock
+void clearBlock(int x, int y) {
+  drawBlock(x, y, BLACK, BLACK);
+}
+
+// getYPosnOfBlock
+int getYPosnOfBlock(Level lvl, int x) {
+  int col = lvl.cols[x];
+  int i = 0;
+  int y = 0;
+  
+  for (i = 0; i < 10; i++) {
+    if (col == 0) {
+      break;
+    } else {
+      y++;
+      col = col >> 1;
+    }
+  }
+
+  for (i = 0; i < 10; i++) {
+    if (lvl.blocks[i] == x) {
+      y++;
+    }
+  }
+
+  return y;
 }

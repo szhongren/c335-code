@@ -37,6 +37,8 @@
 volatile int systick_flag = 0;
 volatile int flag = 0;
 volatile int nunchuk_flag = 0;
+volatile int move_flag = 0;
+volatile int action_flag = 0;
 
 extern queue_t txbuf, rxbuf;
 
@@ -72,6 +74,7 @@ void SysTick_Handler(void) {
 
   nunchuk_t nun_data;
   f3d_nunchuk_read(&nun_data);
-  nunchuk_flag = f3d_nunchuk_change_mode(&nun_data);
+  move_flag = readMove(&nun_data);
+  action_flag = readBlockAct(&nun_data);
 }
 /* f3d_systick.c ends here */
