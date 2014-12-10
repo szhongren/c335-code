@@ -194,10 +194,21 @@ void redrawScreen(Level lvl, State old, State new) {
     clearBlock(doorX - old.left, doorY);
     clearBlock(doorX - old.left, doorY + 1);
   }
-  if (doorX >= new.left && doorX < new.left + 13) {
-    drawDoor(doorX - new.left, doorY, new.doorColor, new.bgColor);
+  
+  // blocks
+  for (i = 0; i < lvl.numBlocks; i++) {  // loop through all the blocks in the level
+    int blockX = lvl.blocks[i]; // 
+    int numBricks = count1s(lvl.cols[blockX]); // count the number of bricks where the block is
+    int stackSize = getYPosnOfBlock(lvl, blockX) - numBricks;   
+    if (blockX >= old.left && blockX < old.left + 13) { // if block at i was on screen in the last frame
+      int j;
+      for (j = 0; j < stackSize; j++) {
+	clearBlock(blockX - old.left, numBricks + j);
+      }
+    }
   }
 
+  
   // bricks
   for (i = 0; i < 13; i++) {
     int diff = lvl.cols[old.left + i] ^ lvl.cols[new.left + i];
@@ -205,11 +216,11 @@ void redrawScreen(Level lvl, State old, State new) {
       continue;
     else {
       for (j = 1; j < 9; j++) {
-	if (diff >> j == 0)
+	if (diff >> j == 0) // if the shift produces a zero we know that we have all the differences
 	  break;
-	else if (diff >> j & 1 == 0) {
+	else if (diff >> j & 1 == 0) {  // if bit at j is 0, then no difference, so do nothing
 	  continue;
-	} else {
+	} else {  // otherwise, if the new state has a brick at j, draw it, or clear it if not
 	  if (lvl.cols[new.left + i] >> j & 1) {
 	    drawBrick(i, j, new.brickColor, new.bgColor);
 	  } else {
@@ -219,25 +230,21 @@ void redrawScreen(Level lvl, State old, State new) {
       }
     }
   }
-  
   // blocks
-  for (i = 0; i < lvl.numBlocks; i++) {
-    int blockX = lvl.blocks[i];
-    int numBricks = count1s(lvl.cols[blockX]);
-    int stackSize = getYPosnOfBlock(lvl, blockX) - numBricks;
-    
-    if (blockX >= old.left && blockX < old.left + 13) {
-      int j;
-      for (j = 0; j < stackSize; j++) {
-	clearBlock(blockX - old.left, numBricks + j);
-      }
-    }
+  for (i = 0; i < lvl.numBlocks; i++) {  // loop through all the blocks in the level
+    int blockX = lvl.blocks[i]; // 
+    int numBricks = count1s(lvl.cols[blockX]); // count the number of bricks where the block is
+    int stackSize = getYPosnOfBlock(lvl, blockX) - numBricks;  
     if (blockX >= new.left && blockX < new.left + 13) {
       int j;
       for (j = 0; j < stackSize; j++) {
 	drawBlock(blockX - new.left, numBricks + j, new.blockColor, new.bgColor);
       }
     }
+  }
+  
+  if (doorX >= new.left && doorX < new.left + 13) {
+    drawDoor(doorX - new.left, doorY, new.doorColor, new.bgColor);
   }
 }
 
