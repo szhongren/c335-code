@@ -11,6 +11,31 @@
 #include <f3d_lcd_sd.h>
 #include "structures.h"
 
+
+// getYPosnOfBlock
+int getYPosnOfBlock(Level lvl, int x) {
+  int col = lvl.cols[x];
+  int i = 0;
+  int y = 0;
+  
+  for (i = 0; i < 10; i++) {
+    if (col == 0) {
+      break;
+    } else {
+      y++;
+      col = col >> 1;
+    }
+  }
+
+  for (i = 0; i < 10; i++) {
+    if (lvl.blocks[i] == x) {
+      y++;
+    }
+  }
+
+  return y;
+}
+
 // draw brick
 void drawBrick(int x, int y, uint16_t color, uint16_t bgColor) {
   static short brick[12] = {0x000, 0xf9f, 0xf9f, 0xf9f, 0xf9f, 0x000,
@@ -66,7 +91,7 @@ void drawDoor(int x, int y, uint16_t color, uint16_t bgColor) {
 
 // draw dude
 void drawDude(Dude dude, uint16_t color, uint16_t capColor) {
-  int x = dude.x;
+  int x = dude.screenPos;
   int y = dude.y;
   int direction = dude.direction;
   
@@ -122,19 +147,19 @@ int count1s(int x) {
 void initGraphics(Level lvl, Dude dude, State state) {
   int x = dude.x;
   int direction = dude.direction;
-
+  // bricks
   int i = 0;
   for (i = 0; i < 13; i++) {
     int j = 0;
     for (j = 0; j < 10; j++) {
       if ((lvl.cols[state.left + i] >> j) & 0x1) {
-	drawBrick(i, j, state.brickColor, state.bgColor)
+	drawBrick(i, j, state.brickColor, state.bgColor);
       } else
 	break;
       // check to see if we hit a 0, if so just continue
     }
   }
-
+  // blocks
   for (i = 0; i < lvl.numBlocks; i++) {
     int blockX = lvl.blocks[i];
     int numBricks = count1s(lvl.cols[blockX]);
@@ -146,19 +171,88 @@ void initGraphics(Level lvl, Dude dude, State state) {
       }
     }
   }
-
+  // door
   int doorX = lvl.doorPos;
   if (doorX >= state.left && doorX < state.left + 13)
     drawDoor(doorX - state.left, getYPosnOfBlock(lvl, doorX), state.doorColor, state.bgColor);
 
   if (state.left == 0 || state.left == lvl.numCols - 13)
     drawDude(dude, state.dudeColor, state.capColor);
+  // ceiling
+  for (i = 0; i < 13; i++) {
+    drawBrick(i, 9, state.brickColor, state.bgColor);
+  }
+}
+
+void redrawScreen(Level lvl, State old, State new) {
+  int i, j;
+    
+  // door
+  int doorX = lvl.doorPos;
+  int doorY = getYPosnOfBlock(lvl, doorX);
+  if (doorX >= old.left && doorX < old.left + 13) {
+    clearBlock(doorX - old.left, doorY);
+    clearBlock(doorX - old.left, doorY + 1);
+  }
+  if (doorX >= new.left && doorX < new.left + 13) {
+    drawDoor(doorX - new.left, doorY, new.doorColor, new.bgColor);
+  }
+
+  // bricks
+  for (i = 0; i < 13; i++) {
+    int diff = lvl.cols[old.left + i] ^ lvl.cols[new.left + i];
+    if (!diff)
+      continue;
+    else {
+      for (j = 1; j < 9; j++) {
+	if (diff >> j == 0)
+	  break;
+	else if (diff >> j & 1 == 0) {
+	  continue;
+	} else {
+	  if (lvl.cols[new.left + i] >> j & 1) {
+	    drawBrick(i, j, new.brickColor, new.bgColor);
+	  } else {
+	    clearBlock(i, j);
+	  }
+	}
+      }
+    }
+  }
+  
+  // blocks
+  for (i = 0; i < lvl.numBlocks; i++) {
+    int blockX = lvl.blocks[i];
+    int numBricks = count1s(lvl.cols[blockX]);
+    int stackSize = getYPosnOfBlock(lvl, blockX) - numBricks;
+    
+    if (blockX >= old.left && blockX < old.left + 13) {
+      int j;
+      for (j = 0; j < stackSize; j++) {
+	clearBlock(blockX - old.left, numBricks + j);
+      }
+    }
+    if (blockX >= new.left && blockX < new.left + 13) {
+      int j;
+      for (j = 0; j < stackSize; j++) {
+	drawBlock(blockX - new.left, numBricks + j, new.blockColor, new.bgColor);
+      }
+    }
+  }
 }
 
 //use this to update the screen at the end of every gameStep call
-void updateScreen(Level lvl, Dude dude, State old, State new) {
-  static char NOTHING = 0, BRICK = 1, BLOCK = 2, DOOR = 3, DUDE = 4;
+void updateScreen(int validMove, Level lvl, Dude dude, State old, State state) {
+  //static char NOTHING = 0, BRICK = 1, BLOCK = 2, DOOR = 3, DUDE = 4;
   // using this to update the screen
+  if (!validMove) {
+    return;
+  } else if (state.left  == old.left) {
+    drawDude(dude, state.dudeColor, state.capColor);
+  } else {
+    redrawScreen(lvl, old, state);
+    drawDude(dude, state.dudeColor, state.capColor);
+  }
 }
 
 
@@ -170,28 +264,4 @@ void eraseOldDude(Dude player) {
 // clearBlock
 void clearBlock(int x, int y) {
   drawBlock(x, y, BLACK, BLACK);
-}
-
-// getYPosnOfBlock
-int getYPosnOfBlock(Level lvl, int x) {
-  int col = lvl.cols[x];
-  int i = 0;
-  int y = 0;
-  
-  for (i = 0; i < 10; i++) {
-    if (col == 0) {
-      break;
-    } else {
-      y++;
-      col = col >> 1;
-    }
-  }
-
-  for (i = 0; i < 10; i++) {
-    if (lvl.blocks[i] == x) {
-      y++;
-    }
-  }
-
-  return y;
 }

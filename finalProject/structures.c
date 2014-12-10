@@ -11,6 +11,16 @@
 /* Code: */
 #include "structures.h"
 #include <f3d_lcd_sd.h>
+#define BRICKS1 1
+#define BRICKS2 3
+#define BRICKS3 7
+#define BRICKS4 15
+#define BRICKS5 31
+#define BRICKS6 63
+#define BRICKS7 127
+#define BRICKS8 255
+#define BRICKS9 511
+
 
 Dude makeNewPlayer(int x, int y, int direction) {
   Dude newDude = { x, y, direction, 1};
@@ -23,8 +33,12 @@ State defaultState() {
 }
 
 Level initLevel() {
-  Level lvl = {1, 13, 
-	       {3, 8, 10, 10, 10}, 5, 
-	       {1023, 1, 1, 3, 7, 15, 31, 63, 1, 1, 1, 1, 1, 1, 1023}, 15};
+  Level lvl = {1, 18, 
+	       {8, 9, 10, 10, 11}, 5, 
+	       {BRICKS9, BRICKS1, BRICKS1, BRICKS2, BRICKS3, 
+		BRICKS4, BRICKS5, BRICKS6, BRICKS1, BRICKS1, 
+		BRICKS1, BRICKS1, BRICKS1, BRICKS1, BRICKS2,
+		BRICKS2, BRICKS3, BRICKS3, BRICKS3, BRICKS9 }, 
+	       20};
   return lvl;
 }

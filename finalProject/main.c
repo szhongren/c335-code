@@ -159,10 +159,14 @@ int gameStep(Level lvl, Dude *dude, State *state) {
   } else { 
     if (move_flag) {
       if (!joystick_flag) {
-	eraseOldDude(*dude);
-	dude->x = dude->x + move_flag;
-	dude->y = getYPosnOfBlock(lvl, dude->x + state->left);
-	drawDude(*dude, state->dudeColor, state->capColor);
+	State old = *state;
+	int validMove = 1;
+	moveDude(move_flag, lvl, dude, state, &validMove);
+	updateScreen(validMove, lvl, *dude, old, *state);
+	/* eraseOldDude(*dude); */
+	/* dude->x = dude->x + move_flag; */
+	/* dude->y = getYPosnOfBlock(lvl, dude->x + state->left); */
+	/* drawDude(*dude, state->dudeColor, state->capColor); */
 	joystick_flag = 1;
       }
     } else {
@@ -178,8 +182,9 @@ int gameStep(Level lvl, Dude *dude, State *state) {
       action_flag = 0;
     }
     
-    State old = *state;
-    updateScreen(lvl, *dude, old, *state);
+    // State old = *state;
+    // if ...
+    
 
     return 1;
   }

@@ -24,7 +24,7 @@ int readMove(nunchuk_t *nun_data) {
     return 1;
   } else if (f3d_j_left(nun_data)) {
     return -1;
-n  } else {
+  } else {
     return 0;
   }
 }
@@ -39,71 +39,78 @@ int readBlockAct(nunchuk_t *nun_data) {
 }
 
 int invalidMove(int move, Level lvl, Dude dude) {
-  if (dude.x <= 1 || dude.x >= lvl.numCols - 2)
-    return 0;
-  else if (isObstacleThere(dude.x, dude.y, dude.direction))
-    return 0;
-  else
+  if ((dude.x <= 1 && move == -1) || (dude.x >= lvl.numCols - 2 && move == 1))
     return 1;
+  else if (isObstacleThere(move, lvl, dude))
+    return 1;
+  else
+    return 0;
 }
 
 // call this from the first if inside gamestep
-void moveDude(int move, Level lvl, Dude dude, State state) {
-  if (move == 1) {
-    dude.direction = RIGHT;
-    if (invalidMove(move, lvl, dude))
-      return;
+void moveDude(int move, Level lvl, Dude *dude, State *state, int *validMove) {
+  if (invalidMove(move, lvl, *dude)) {
+    *validMove = 0;
+    return;
+  }
+  
+  eraseOldDude(*dude);
 
-    if (state.left == 0) {
-      if (dude.screenPos == 6)
-	state.left += move;
+  if (move == 1) {
+    if (state->left == 0) {
+      if (dude->screenPos == 6)
+	state->left += move;
       else
-	dude.screenPos += move;
-    } else if (state.left == lvl.numCols - 13) {
-      dude.screenPos += move;
+	dude->screenPos += move;
+    } else if (state->left == lvl.numCols - 13) {
+      dude->screenPos += move;
     } else
-      state.left += move;
+      state->left += move;
   
   } else if (move == -1) {
-    dude.direction = LEFT;
-    if (invalidMove(move, lvl, dude))
-      return;
-
-    if (state.left == 0) {
-      dude.screenPos += move;
-    } else if (state.left == lvl.numCols - 13) {
-      if (dude.screenPos == 6)
-	state.left += move;
+    if (state->left == 0) {
+      dude->screenPos += move;
+    } else if (state->left == lvl.numCols - 13) {
+      if (dude->screenPos == 6)
+	state->left += move;
       else
-	dude.screenPos += move;
+	dude->screenPos += move;
     } else
-      state.left += move;
+      state->left += move;
   }
-  dude.x += move;
+
+  dude->direction = move > 0 ? RIGHT : LEFT;
+  dude->x += move;
+  dude->y = getYPosnOfBlock(lvl, dude->x);
+  //drawDude(*dude, state->dudeColor, state->capColor);
 }
 
-  // move will be the value we got from the readMove function above, which also means the direction. this function should do all the updating of the values in dude.x, stae, etc, and also checking of whether the move is valid or not
+  // move will be the value we got from the readMove function above, which also means the direction. this function should do all the updating of the values in dude.x, state, etc, and also checking of whether the move is valid or not
+
+int isObstacleThere(int move, Level lvl, Dude dude) {
+  int nextX = dude.x + move;
+  int currHeight = dude.y;
+  int topNextStack = getYPosnOfBlock(lvl, nextX);
+  if (topNextStack - currHeight > 1)
+    return 1;
+  else 
+    return 0;
 }
 
-int isObstacleThere(int x, int y, int direction) {
+/* void moveDudeRight(Dude *dude) { */
+/*   int x = dude->x; */
+/*   int y = dude->y; */
+/*   int direction = dude->direction; */
   
-
-}
-
-void moveDudeRight(Dude *dude) {
-  int x = dude->x;
-  int y = dude->y;
-  int direction = dude->direction;
-  
-  if (isObstacleThere(x, y, direction)) {
+/*   if (isObstacleThere(x, y, direction)) { */
     
-  }
-}
+/*   } */
+/* } */
 
-void moveDudeLeft(Dude *dude) {
-  int x = dude->x;
-  int y = dude->y;
-  int direction = dude->direction;
+/* void moveDudeLeft(Dude *dude) { */
+/*   int x = dude->x; */
+/*   int y = dude->y; */
+/*   int direction = dude->direction; */
   
-}
+/* } */
 
