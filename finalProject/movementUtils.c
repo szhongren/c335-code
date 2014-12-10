@@ -38,6 +38,52 @@ int readBlockAct(nunchuk_t *nun_data) {
     return 0;
 }
 
+void checkForBlockAction(nunchuk_t *nun_data, Level *lvl, Dude *dude) {
+  int blockAction = readBlockAct(&nun_data);
+   int blockLocation = dude.x;
+  if (dude.direction == RIGHT) 
+    blockLocation += 1;
+  else
+    blockLocation -= 1;
+  if (! blockAction) return;
+    if (blockAction > 0) {
+      pickupBlock(blockLocation,lvl,dude);
+  } else {
+      dropBlock(blockLocation,lvl,dude);
+  }
+}
+
+void pickupBlock(int blockLocation, Level *lvl, Dude *dude) {
+  int blockX = getIndexOfBlockInLevel(blockLocation);
+  int move = dude->direction == RIGHT ? 1 : -1;
+  if (isObstacleThere(move,*lvl,*dude)) {
+    return;
+  } else {
+    lvl->blocks[blockX] = -1;
+    dude->hasBlock = 1;
+  }
+}
+
+void dropBlock(int blockLocation, Level *lvl, Dude *dude) {
+  int blockX = getIndexOfBlockInLevel(lvl,-1);
+  int move = dude->direction == RIGHT ? 1 : -1;
+  if (isObstacleThere(move,*lvl,*dude)) {
+    return;
+  } else {
+    lvl->blocks[blockX] = dude->x + move;
+    dude->hasBlock = 0;
+ }
+}
+
+int getIndexOfBlockInLevel(Level lvl, int blockX) {
+  int i = 0;
+  for (i = 0; i < lvl.numBlocks; i++) {
+    if (lvl.blocks[i] == blockX)
+      break;
+  }
+  return i;
+}
+
 int invalidMove(int move, Level lvl, Dude dude) {
   if ((dude.x <= 1 && move == -1) || (dude.x >= lvl.numCols - 2 && move == 1))
     return 1;

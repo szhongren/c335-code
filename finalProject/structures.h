@@ -18,6 +18,7 @@ typedef struct dude {
   int y;
   int direction;
   int screenPos;
+  short hasBlock = 0;
 } Dude;
 
 typedef struct level {

@@ -23,7 +23,7 @@
 
 
 Dude makeNewPlayer(int x, int y, int direction) {
-  Dude newDude = { x, y, direction, 1};
+  Dude newDude = { x, y, direction, 1, 0};
   return newDude;
 }
 

@@ -126,6 +126,10 @@ void drawDude(Dude dude, uint16_t color, uint16_t capColor) {
       }
     }
   }
+
+  if (dude.hasBlock) {
+    drawBlock(x, y+2, state.blockColor, state.bgColor);
+  }
 }
 
 int count1s(int x) {
